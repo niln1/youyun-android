@@ -1,5 +1,4 @@
 yyDroid
-=======
 
 Setup debug over usb
 
