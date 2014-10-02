@@ -1,12 +1,11 @@
+#intellij project files
 .idea/
-gen/
-out/
 *.iml
-local.properties
 project.properties
 proguard-project.txt
-*.apk
-*.ap_
+
+#git stuff
+*.orig
 
 # Files for the Dalvik VM
 *.dex
@@ -17,6 +16,9 @@ proguard-project.txt
 # Generated files
 bin/
 gen/
+out/
+*.apk
+*.ap_
 
 # Gradle files
 .gradle/
