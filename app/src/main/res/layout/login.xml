@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:weightSum="1" android:background="@drawable/background">
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:focusable="true" android:focusableInTouchMode="true">
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Login"
+                android:onClick="login"
+                android:id="@+id/button" android:layout_gravity="center_horizontal"
+                android:layout_alignParentBottom="true" android:layout_centerHorizontal="true"
+                android:layout_marginBottom="100dp" android:hint="username"/>
+        <EditText
+                android:layout_width="@dimen/large_button_width"
+                android:layout_height="@dimen/large_button_height"
+                android:id="@+id/userNameText" android:background="@android:color/background_light"
+                android:editable="true" android:clickable="true" android:enabled="true" android:focusable="true"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginTop="114dp"
+                android:height="@dimen/large_button_height" android:width="@dimen/large_button_width"
+                android:layout_alignParentTop="true" android:layout_centerHorizontal="true"
+                android:textColor="@android:color/darker_gray" android:singleLine="true" android:hint="username"/>
+        <EditText
+                android:layout_width="@dimen/large_button_width"
+                android:layout_height="@dimen/large_button_height"
+                android:inputType="textPassword"
+                android:ems="10"
+                android:id="@+id/passwordText" android:editable="true" android:clickable="true"
+                android:enabled="true" android:background="@android:color/background_light" android:autoText="false"
+                android:layout_gravity="center"
+                android:layout_marginTop="67dp" android:password="true"
+                android:width="@dimen/large_button_width" android:height="40dp" android:layout_below="@+id/userNameText"
+                android:layout_alignLeft="@+id/userNameText" android:textColor="@android:color/darker_gray"
+                android:singleLine="true" android:hint="password"/>
+    </RelativeLayout>
+</LinearLayout>
+
