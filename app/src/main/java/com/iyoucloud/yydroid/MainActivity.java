@@ -1,6 +1,5 @@
 package com.iyoucloud.yydroid;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -27,29 +26,35 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.apache.http.Header;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends BaseActivity {
 
+
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
+
     // nav drawer title
+
     private CharSequence mDrawerTitle;
+    private CharSequence mTitle;
+    private NavDrawerListAdapter adapter;
+
+    private List<NavDrawerItem> dataList;
 
 
     // slide menu items
     private String[] navMenuTitles;
     private TypedArray navMenuIcons;
 
-    private ArrayList<NavDrawerItem> navDrawerItems;
-    private NavDrawerListAdapter adapter;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        dataList = new ArrayList<NavDrawerItem>();
         mTitle = mDrawerTitle = getTitle();
 
         // load slide menu items
@@ -61,25 +66,21 @@ public class MainActivity extends BaseActivity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
 
-        navDrawerItems = new ArrayList<NavDrawerItem>();
-
-        // adding nav drawer items to array
-    //    navDrawerItems.add(new NavDrawerItem("", R.drawable.default_user));
+        // adding nav drawer items to
+        dataList.add(new NavDrawerItem(true)); // adding a userProfile to the list
         // Home
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
+        dataList.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
         // Pickup report
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
+        dataList.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
         // Logout
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
-
+        dataList.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
 
 
         // Recycle the typed array
         navMenuIcons.recycle();
 
         // setting the nav drawer list adapter
-        adapter = new NavDrawerListAdapter(getApplicationContext(),
-                navDrawerItems);
+        adapter = new NavDrawerListAdapter(this, R.layout.drawer_list_item, dataList);
         mDrawerList.setAdapter(adapter);
 
         // enabling action bar app icon and behaving it as toggle button
@@ -222,16 +223,19 @@ public class MainActivity extends BaseActivity {
         // update the main content by replacing fragments
         Fragment fragment = null;
         switch (position) {
-            //home
+            //user avator
             case 0:
+                break;
+            //home
+            case 1:
                 fragment = new HomeFragment();
                 break;
             //pickup
-            case 1:
+            case 2:
                 fragment = new PickupFragment();
                 break;
             //logout
-            case 2:
+            case 3:
                 logout(view);
                 return;
             default:
@@ -248,8 +252,11 @@ public class MainActivity extends BaseActivity {
             setTitle(navMenuTitles[position]);
             mDrawerLayout.closeDrawer(mDrawerList);
         } else {
+            //selected on user profile
+            mDrawerLayout.closeDrawer(mDrawerList);
+
             // error in creating fragment
-            Log.e("MainActivity", "Error in creating fragment");
+            Log.i("MainActivity", "user profile clicked");
         }
     }
 

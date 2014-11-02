@@ -4,3 +4,11 @@
 /.idea/libraries
 .DS_Store
 /build
+app/app.iml
+.idea/
+build.gradle
+gradlew
+settings.gradle
+gradlew.bat
+gradle.properties
+gradle/

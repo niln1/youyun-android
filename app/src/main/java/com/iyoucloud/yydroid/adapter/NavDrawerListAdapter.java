@@ -6,65 +6,85 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.iyoucloud.yydroid.R;
 import com.iyoucloud.yydroid.model.NavDrawerItem;
+import com.iyoucloud.yydroid.view.RoundedImageView;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class NavDrawerListAdapter extends BaseAdapter {
+public class NavDrawerListAdapter extends ArrayAdapter<NavDrawerItem> {
 
-    private Context context;
-    private ArrayList<NavDrawerItem> navDrawerItems;
+    Context context;
+    List<NavDrawerItem> drawerItemList;
+    int layoutResID;
 
-    public NavDrawerListAdapter(Context context, ArrayList<NavDrawerItem> navDrawerItems){
+    public NavDrawerListAdapter(Context context, int layoutResourceID,
+                               List<NavDrawerItem> listItems) {
+        super(context, layoutResourceID, listItems);
         this.context = context;
-        this.navDrawerItems = navDrawerItems;
-    }
+        this.drawerItemList = listItems;
+        this.layoutResID = layoutResourceID;
 
-    @Override
-    public int getCount() {
-        return navDrawerItems.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return navDrawerItems.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            LayoutInflater mInflater = (LayoutInflater)
-                    context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            convertView = mInflater.inflate(R.layout.drawer_list_item, null);
+        // TODO Auto-generated method stub
+
+        DrawerItemHolder drawerHolder;
+        View view = convertView;
+
+        if (view == null) {
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            drawerHolder = new DrawerItemHolder();
+
+            view = inflater.inflate(layoutResID, parent, false);
+            drawerHolder.itemTitle = (TextView) view
+                    .findViewById(R.id.drawer_itemTitle);
+            drawerHolder.icon = (ImageView) view.findViewById(R.id.drawer_icon);
+
+            drawerHolder.itemLayout = (LinearLayout) view
+                    .findViewById(R.id.itemLayout);
+            drawerHolder.userProfileLayout = (LinearLayout) view
+                    .findViewById(R.id.userProfileLayout);
+
+            view.setTag(drawerHolder);
+
+        } else {
+            drawerHolder = (DrawerItemHolder) view.getTag();
+
         }
 
-        ImageView imgIcon = (ImageView) convertView.findViewById(R.id.icon);
-        TextView txtTitle = (TextView) convertView.findViewById(R.id.title);
-        TextView txtCount = (TextView) convertView.findViewById(R.id.counter);
+        NavDrawerItem dItem = this.drawerItemList.get(position);
 
-        imgIcon.setImageResource(navDrawerItems.get(position).getIcon());
-        txtTitle.setText(navDrawerItems.get(position).getTitle());
+        if (dItem.isUserProfile()) {
+            drawerHolder.itemLayout.setVisibility(LinearLayout.INVISIBLE);
+            drawerHolder.userProfileLayout.setVisibility(LinearLayout.VISIBLE);
+            RoundedImageView roundedImageView =
+                    (RoundedImageView) drawerHolder.userProfileLayout.findViewById(R.id.profile_pic);
 
-        // displaying count
-        // check whether it set visible or not
-        if(navDrawerItems.get(position).getCounterVisibility()){
-            txtCount.setText(navDrawerItems.get(position).getCount());
-        }else{
-            // hide the counter view
-            txtCount.setVisibility(View.GONE);
         }
+        else {
 
-        return convertView;
+            drawerHolder.userProfileLayout.setVisibility(LinearLayout.GONE);
+            drawerHolder.itemLayout.setVisibility(LinearLayout.VISIBLE);
+
+            drawerHolder.icon.setImageDrawable(view.getResources().getDrawable(
+                    dItem.getImgResID()));
+            drawerHolder.itemTitle.setText(dItem.getItemTitle());
+
+        }
+        return view;
     }
 
+    private static class DrawerItemHolder {
+        TextView itemTitle;
+        ImageView icon;
+        LinearLayout itemLayout, userProfileLayout;
+    }
 }

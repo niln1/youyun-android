@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
+import android.widget.Toast;
 
 import com.iyoucloud.yydroid.R;
 import com.iyoucloud.yydroid.YYDroidApplication;
@@ -42,14 +43,15 @@ public class HomeFragment extends Fragment {
             String cookie = cookieManager.getCookie(app.URL_HELPER.getServerUrl());
             SocketIO socket = new SocketIO(app.URL_HELPER.getServerUrl());
             //todo fix index out of bound
-            String cookieStr = app.getCookies().get(0).toString();
-            cookieStr = cookieStr.replace(']',';').replace(':','=').replace("[","");
             socket.addHeader("Cookie", "yy.sid="+app.getCookies().get(0).getValue());
          //   socket.addHeader()
             socket.connect(new IOCallback() {
                 @Override
                 public void onMessage(JSONObject json, IOAcknowledge ack) {
                     try {
+                        Toast.makeText(app.getApplicationContext(),
+                                "Server said:" + json.toString(2),
+                                Toast.LENGTH_LONG).show();
                         System.out.println("Server said:" + json.toString(2));
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -84,7 +86,7 @@ public class HomeFragment extends Fragment {
             });
 
             // This line is cached until the connection is establisched.
-        //    socket.send("Hello Server!");
+            socket.emit("pickup::teacher::get-report-for-today");
         }catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,6 +1,5 @@
 package com.iyoucloud.yydroid;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;

@@ -48,7 +48,7 @@ public class LoginActivity extends BaseActivity {
             e.printStackTrace();
         }
         final LoginActivity self = this;
-        client.post(getApplicationContext(), app.URL_HELPER.getLoginUrl(),  entity, "application/x-www-form-urlencoded", new AsyncHttpResponseHandler() {
+        client.post(getApplicationContext(), app.URL_HELPER.getLoginUrl(),  entity, "application/x-www-form-urlencoded", new BaseAsyncHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] response) {
