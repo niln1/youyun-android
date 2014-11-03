@@ -10,7 +10,7 @@ public class UrlHelper {
         SERVER_URL = serverUrl;
     }
 
-    private static final String LOGIN_URL = "api/v1/account/login";
+    private static final String LOGIN_URL = "/api/v1/account/login";
 
     private static final String LOGOUT_URL = "";
 
@@ -24,7 +24,7 @@ public class UrlHelper {
     }
 
     public static String getUserAccountUrl() {
-        return SERVER_URL + "api/v1/account?signature=tempkey";
+        return SERVER_URL + "/api/v1/account?signature=tempkey";
     }
 
     public static String getLogoutUrl() {

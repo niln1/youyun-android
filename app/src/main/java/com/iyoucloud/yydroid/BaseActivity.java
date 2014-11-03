@@ -9,7 +9,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base class for activities
@@ -64,5 +68,12 @@ public class BaseActivity extends Activity {
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
         }
+    }
+
+    public Map<String, String> parseJsonResponse(byte[] response) {
+        String jsonString = new String(response);
+        Gson gson=new Gson();
+        Map<String, String> map = new HashMap<String, String>();
+        return (Map<String, String>) gson.fromJson(jsonString, map.getClass());
     }
 }

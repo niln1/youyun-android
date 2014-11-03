@@ -17,6 +17,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.iyoucloud.yydroid.adapter.NavDrawerListAdapter;
 import com.iyoucloud.yydroid.fragment.HomeFragment;
 import com.iyoucloud.yydroid.fragment.PickupFragment;
@@ -26,7 +28,9 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.apache.http.Header;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends BaseActivity {
@@ -119,6 +123,11 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] response) {
                 // called when response HTTP status is "200 OK"
+                Map<String,String> map = parseJsonResponse(response);
+                LinkedTreeMap<String, String> resultMap = (LinkedTreeMap)((HashMap) map).get("result");
+                String userImageUrl = resultMap.get("userImage");
+
+                adapter.updateProfile(app.SERVER_URL + userImageUrl);
                 Toast.makeText(getApplicationContext(),
                         "good good",
                         Toast.LENGTH_LONG).show();
