@@ -19,7 +19,7 @@ import io.socket.IOCallback;
 import io.socket.SocketIO;
 import io.socket.SocketIOException;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends BaseFragment {
 
     YYDroidApplication app;
 

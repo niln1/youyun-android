@@ -8,12 +8,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-
-import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * The base class for activities
@@ -70,10 +68,8 @@ public class BaseActivity extends Activity {
         }
     }
 
-    public Map<String, String> parseJsonResponse(byte[] response) {
+    public JSONObject parseJsonResponse(byte[] response) throws JSONException{
         String jsonString = new String(response);
-        Gson gson=new Gson();
-        Map<String, String> map = new HashMap<String, String>();
-        return (Map<String, String>) gson.fromJson(jsonString, map.getClass());
+        return new JSONObject(jsonString);
     }
 }

@@ -16,21 +16,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import com.iyoucloud.yydroid.adapter.NavDrawerListAdapter;
 import com.iyoucloud.yydroid.fragment.HomeFragment;
 import com.iyoucloud.yydroid.fragment.PickupFragment;
 import com.iyoucloud.yydroid.model.NavDrawerItem;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-
 import org.apache.http.Header;
-
+import org.json.JSONObject;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class MainActivity extends BaseActivity {
@@ -123,14 +117,19 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] response) {
                 // called when response HTTP status is "200 OK"
-                Map<String,String> map = parseJsonResponse(response);
-                LinkedTreeMap<String, String> resultMap = (LinkedTreeMap)((HashMap) map).get("result");
-                String userImageUrl = resultMap.get("userImage");
+                try{
+                    JSONObject jsonObject = parseJsonResponse(response);
+                    JSONObject resultObject = jsonObject.getJSONObject("result");
+                    String userImageUrl = resultObject.getString("userImage");
 
-                adapter.updateProfile(app.SERVER_URL + userImageUrl);
-                Toast.makeText(getApplicationContext(),
-                        "good good",
-                        Toast.LENGTH_LONG).show();
+                    adapter.updateProfile(app.SERVER_URL + userImageUrl);
+                    Toast.makeText(getApplicationContext(),
+                            "good good",
+                            Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Log.e(this.getClass().getName(), e.getMessage());
+                }
+
             }
 
             @Override

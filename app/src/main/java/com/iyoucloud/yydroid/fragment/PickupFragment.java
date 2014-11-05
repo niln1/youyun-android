@@ -1,18 +1,13 @@
 package com.iyoucloud.yydroid.fragment;
 
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
-import android.widget.ImageView;
-import android.widget.Toast;
-
-import com.google.gson.internal.LinkedTreeMap;
 import com.iyoucloud.yydroid.R;
 import com.iyoucloud.yydroid.YYCard;
 import com.iyoucloud.yydroid.YYDroidApplication;
@@ -22,23 +17,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import io.socket.IOAcknowledge;
-import io.socket.IOCallback;
 import io.socket.SocketIO;
-import io.socket.SocketIOException;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.view.CardListView;
 
 
-public class PickupFragment extends Fragment {
+public class PickupFragment extends BaseFragment {
 
     YYDroidApplication app;
+    CardArrayAdapter mCardArrayAdapter;
+    CardListView listView;
+    Activity activity;
 
 
     public PickupFragment(){
@@ -55,9 +46,27 @@ public class PickupFragment extends Fragment {
 
     }
 
+
+    @Override
+    public void on(String event, IOAcknowledge ack, Object... jsonObject) {
+        try {
+            final JSONArray needToPickupList =
+                    ((JSONObject) jsonObject[0]).getJSONArray("needToPickupList");
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    initCards(needToPickupList);
+                }
+            });
+        } catch (JSONException je) {
+
+        }
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        activity = this.getActivity();
 
 
         try{
@@ -66,51 +75,7 @@ public class PickupFragment extends Fragment {
             SocketIO socket = new SocketIO(app.URL_HELPER.getServerUrl());
             //todo fix index out of bound
             socket.addHeader("Cookie", "yy.sid="+app.getCookies().get(0).getValue());
-            socket.connect(new IOCallback() {
-                @Override
-                public void onMessage(JSONObject json, IOAcknowledge ack) {
-                    try {
-                        Toast.makeText(app.getApplicationContext(),
-                                "Server said:" + json.toString(2),
-                                Toast.LENGTH_LONG).show();
-                        System.out.println("Server said:" + json.toString(2));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onMessage(String data, IOAcknowledge ack) {
-                    System.out.println("Server said: " + data);
-                }
-
-                @Override
-                public void onError(SocketIOException socketIOException) {
-                    System.out.println("an Error occured");
-                    socketIOException.printStackTrace();
-                }
-
-                @Override
-                public void onDisconnect() {
-                    System.out.println("Connection terminated.");
-                }
-
-                @Override
-                public void onConnect() {
-                    System.out.println("Connection established");
-                }
-
-                @Override
-                public void on(String event, IOAcknowledge ack, Object... jsonObject) {
-                    try {
-                        JSONArray needToPickupList =
-                                ((JSONObject) jsonObject[0]).getJSONArray("needToPickupList");
-                        initCards(needToPickupList);
-                    } catch (JSONException je) {
-
-                    }
-                }
-            });
+            socket.connect(this);
 
             // This line is cached until the connection is establisched.
             socket.emit("pickup::teacher::get-report-for-today");
@@ -118,34 +83,39 @@ public class PickupFragment extends Fragment {
             e.printStackTrace();
         }
 
-   //     initCards();
+        ArrayList<Card> cards = new ArrayList<Card>();
+
+        mCardArrayAdapter = new CardArrayAdapter(getActivity(), cards);
+
+        listView = (CardListView) getActivity().findViewById(R.id.yy_card_list);
+        if (listView != null) {
+            listView.setAdapter(mCardArrayAdapter);
+
+        }
     }
 
     private void initCards(JSONArray needToPickupList) {
 
         ArrayList<Card> cards = new ArrayList<Card>();
+
         for (int i = 0; i < needToPickupList.length(); i++) {
             try{
                 JSONObject studentToPick = (JSONObject)(needToPickupList.get(i));
                 String firstName = studentToPick.getString("firstname");
                 String lastName = studentToPick.getString("lastname");
                 YYCard card = new YYCard(getActivity(), firstName + " " + lastName, R.layout.card_content);
+
                 cards.add(card);
             } catch (JSONException e) {
                 Log.e(e.getMessage(), "");
             }
 
         }
-
-        CardArrayAdapter mCardArrayAdapter = new CardArrayAdapter(getActivity(), cards);
-
-        CardListView listView = (CardListView) getActivity().findViewById(R.id.yy_card_list);
-        if (listView != null) {
-            listView.setAdapter(mCardArrayAdapter);
-
-        }
-        for(Card card:cards) {
-            card.getCardView().refreshCard(card);
+        try {
+            mCardArrayAdapter.addAll(cards);
+            mCardArrayAdapter.notifyDataSetChanged();
+        }catch(Exception e){
+            Log.e("",e.getMessage());
         }
     }
 
