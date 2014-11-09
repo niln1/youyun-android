@@ -16,6 +16,8 @@ import org.apache.http.HttpEntity;
 
 import java.io.IOException;
 
+import io.socket.SocketIO;
+
 public class LoginActivity extends BaseActivity {
 
     /**
@@ -52,11 +54,6 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] response) {
-                // called when response HTTP status is "200 OK"
-                Toast.makeText(getApplicationContext(),
-                        "200",
-                        Toast.LENGTH_LONG).show();
-
                 Intent intent = new Intent(self, MainActivity.class);
                 startActivity(intent);
             }

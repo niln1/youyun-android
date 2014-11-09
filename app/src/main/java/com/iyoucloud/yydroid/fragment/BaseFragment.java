@@ -1,6 +1,9 @@
 package com.iyoucloud.yydroid.fragment;
 
 import android.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+
+import com.iyoucloud.yydroid.util.OnSocketMessageListener;
 
 import org.json.JSONObject;
 
@@ -9,7 +12,7 @@ import io.socket.IOCallback;
 import io.socket.SocketIOException;
 
 
-public class BaseFragment extends Fragment implements IOCallback {
+public class BaseFragment extends Fragment implements IOCallback, SwipeRefreshLayout.OnRefreshListener, OnSocketMessageListener {
 
     @Override
     public void onDisconnect() {
@@ -38,6 +41,16 @@ public class BaseFragment extends Fragment implements IOCallback {
 
     @Override
     public void onError(SocketIOException e) {
+
+    }
+
+    @Override
+    public void onRefresh() {
+
+    }
+
+    @Override
+    public void onSocketMessage(Object... jsonObject) {
 
     }
 }

@@ -4,8 +4,14 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.iyoucloud.yydroid.util.OnToggleCheckboxListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardHeader;
@@ -16,6 +22,9 @@ public class YYCard extends Card {
 
     protected String mTitleHeader;
     protected String mTitleMain;
+    protected OnToggleCheckboxListener mListener;
+    private String id;
+    private String reportId;
 
     public YYCard(Context context, String titleHeader, String titleMain) {
         super(context, R.layout.card_thumbnail_layout);
@@ -24,9 +33,16 @@ public class YYCard extends Card {
         init(context);
     }
 
-    public YYCard(Context context, String title, int innerLayout) {
+    public YYCard(Context context, String title, int innerLayout, String id, String reportId) {
         super(context, innerLayout);
+        try {
+            mListener = (OnToggleCheckboxListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement OnToggleCheckboxListener");
+        }
         this.mTitleHeader = title;
+        this.id = id;
+        this.reportId = reportId;
         init(context);
     }
 
@@ -37,6 +53,22 @@ public class YYCard extends Card {
         if (mTitle != null){
             mTitle.setText(mTitleHeader);
         }
+        final CheckBox checkBox = (CheckBox) parent.findViewById(R.id.yy_thumb_card_checkbox);
+        checkBox.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("reportID", reportId);
+                    jsonObject.put("studentID", id);
+                    jsonObject.put("pickedUp", ((CheckBox)v).isChecked());
+                } catch (JSONException e) {
+
+                }
+                mListener.onCheckboxToggled((CheckBox)v , jsonObject);
+            }
+        });
     }
 
     private void init(Context context) {

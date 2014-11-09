@@ -14,12 +14,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.iyoucloud.yydroid.adapter.NavDrawerListAdapter;
 import com.iyoucloud.yydroid.fragment.HomeFragment;
 import com.iyoucloud.yydroid.fragment.PickupFragment;
 import com.iyoucloud.yydroid.model.NavDrawerItem;
+import com.iyoucloud.yydroid.util.OnSocketMessageListener;
+import com.iyoucloud.yydroid.util.OnToggleCheckboxListener;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.apache.http.Header;
 import org.json.JSONObject;
@@ -27,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements OnToggleCheckboxListener, OnSocketMessageListener {
 
 
     private DrawerLayout mDrawerLayout;
@@ -139,7 +142,10 @@ public class MainActivity extends BaseActivity {
                         Toast.LENGTH_LONG).show();
             }
         });
-
+        HomeFragment fragment = new HomeFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
+        app.connectSocket();
     }
 
 
@@ -266,6 +272,20 @@ public class MainActivity extends BaseActivity {
             // error in creating fragment
             Log.i("MainActivity", "user profile clicked");
         }
+    }
+
+    @Override
+    public void onCheckboxToggled(CheckBox view, JSONObject jsonObject) {
+        boolean checked = view.isChecked();
+
+        app.sendSocketMessage("pickup::teacher::pickup-student", jsonObject, this);
+    }
+
+    @Override
+    public void onSocketMessage(Object... jsonObject) {
+        Toast.makeText(getApplicationContext(),
+                "picked",
+                Toast.LENGTH_LONG).show();
     }
 
     /**

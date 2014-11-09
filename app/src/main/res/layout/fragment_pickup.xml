@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:card="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipe_refresh_layout_pickup"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" android:background="@android:color/white">
+                android:layout_height="match_parent"
+    android:background="@color/bg_color">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   android:orientation="vertical"
@@ -18,4 +21,4 @@
             card:list_card_layout_resourceID="@layout/list_card_thumbnail_layout"/>
     </LinearLayout>
 
-</RelativeLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

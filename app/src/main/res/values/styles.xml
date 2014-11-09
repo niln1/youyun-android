@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="custom_theme_color">#6ADBD8</color>
+    <color name="custom_theme_color">@color/school_dark_color</color>
 
     <style name="yyTheme">
         <item name="android:windowBackground">@color/custom_theme_color</item>
