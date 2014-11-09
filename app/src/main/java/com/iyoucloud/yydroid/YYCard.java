@@ -1,60 +1,105 @@
 package com.iyoucloud.yydroid;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.iyoucloud.yydroid.util.OnToggleCheckboxListener;
+import com.iyoucloud.yydroid.util.OnToggleSwitchListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
-import it.gmariotti.cardslib.library.view.CardView;
 
 public class YYCard extends Card {
 
     protected String mTitleHeader;
     protected String mTitleMain;
-    protected OnToggleCheckboxListener mListener;
+    protected OnToggleSwitchListener mListener;
     private String id;
     private String reportId;
+    private boolean pickedUp;
+    private String pickupTime;
+    private String pickupLocation;
+//
+//    public YYCard(Context context, String titleHeader, String titleMain) {
+//        super(context, R.layout.card_thumbnail_layout);
+//        this.mTitleHeader = titleHeader;
+//        this.mTitleMain = titleMain;
+//        init(context);
+//    }
+//
+//    public YYCard(Context context, String title, int innerLayout, String id, String reportId, boolean pickedUp) {
+//        super(context, innerLayout);
+//        try {
+//            mListener = (OnToggleCheckboxListener) context;
+//        } catch (ClassCastException e) {
+//            throw new ClassCastException(context.toString() + " must implement OnToggleCheckboxListener");
+//        }
+//        this.mTitleHeader = title;
+//        this.id = id;
+//        this.reportId = reportId;
+//        this.pickedUp = pickedUp;
+//        init(context);
+//    }
 
-    public YYCard(Context context, String titleHeader, String titleMain) {
-        super(context, R.layout.card_thumbnail_layout);
-        this.mTitleHeader = titleHeader;
-        this.mTitleMain = titleMain;
-        init(context);
-    }
 
-    public YYCard(Context context, String title, int innerLayout, String id, String reportId) {
+    public YYCard(Context context, int innerLayout, String reportId, boolean pickedUp, JSONObject studentJSON) {
         super(context, innerLayout);
         try {
-            mListener = (OnToggleCheckboxListener) context;
+            mListener = (OnToggleSwitchListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement OnToggleCheckboxListener");
         }
-        this.mTitleHeader = title;
-        this.id = id;
         this.reportId = reportId;
+
+        try {
+            String firstName = studentJSON.getString("firstname");
+            String lastName = studentJSON.getString("lastname");
+            String pickupLocation = studentJSON.getString("pickupLocation");
+            String id = studentJSON.getString("_id");
+            String classes = studentJSON.getString("classes");
+            String userImage = studentJSON.getString("userImage");
+            JSONObject pickupDetail = studentJSON.getJSONObject("studentPickupDetail");
+            String weekDay;
+            SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
+
+            Calendar calendar = Calendar.getInstance();
+            weekDay = dayFormat.format(calendar.getTime()).toLowerCase();
+            this.mTitleHeader = firstName + " " + lastName;
+            this.id = id;
+            this.pickedUp = pickedUp;
+            this.pickupTime = pickupDetail.getString(weekDay + "PickupTime");
+            this.pickupLocation = pickupLocation;
+
+        } catch (JSONException e) {
+
+        }
+
         init(context);
     }
 
 
     @Override
     public void setupInnerViewElements(ViewGroup parent, View view) {
-        TextView mTitle = (TextView) parent.findViewById(R.id.yy_thumb_card_title);
+        TextView mTitle = (TextView) parent.findViewById(R.id.yy_thumb_card_student_name);
         if (mTitle != null){
             mTitle.setText(mTitleHeader);
         }
-        final CheckBox checkBox = (CheckBox) parent.findViewById(R.id.yy_thumb_card_checkbox);
-        checkBox.setOnClickListener(new View.OnClickListener() {
+        TextView mPickupLocation = (TextView) parent.findViewById(R.id.yy_thumb_card_pickup_loc);
+        mPickupLocation.setText(pickupLocation);
+        TextView mPickupTime = (TextView) parent.findViewById(R.id.yy_thumb_card_pickup_time);
+        mPickupTime.setText(pickupTime);
+
+        final Switch aSwitch = (Switch) parent.findViewById(R.id.yy_thumb_card_switch);
+        aSwitch.setChecked(pickedUp);
+
+        aSwitch.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -62,11 +107,11 @@ public class YYCard extends Card {
                 try {
                     jsonObject.put("reportID", reportId);
                     jsonObject.put("studentID", id);
-                    jsonObject.put("pickedUp", ((CheckBox)v).isChecked());
+                    jsonObject.put("pickedUp", String.valueOf(((Switch)v).isChecked()));
                 } catch (JSONException e) {
 
                 }
-                mListener.onCheckboxToggled((CheckBox)v , jsonObject);
+                mListener.onSwitchToggled((Switch) v, jsonObject);
             }
         });
     }

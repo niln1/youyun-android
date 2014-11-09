@@ -27,7 +27,6 @@ public class PickupFragment extends BaseFragment {
     CardListView listView;
     Activity activity;
     SwipeRefreshLayout swipeLayout;
-    String reportId;
 
     public PickupFragment(){
 
@@ -68,56 +67,49 @@ public class PickupFragment extends BaseFragment {
         app.sendSocketMessage("pickup::teacher::get-report-for-today", this);
     }
 
-    private void initCards(JSONArray needToPickupList, String reportId) {
+    private void initCards(JSONObject jsonObject) {
 
-        ArrayList<Card> cards = new ArrayList<Card>();
 
-        for (int i = 0; i < needToPickupList.length(); i++) {
-            try{
+        try {
+            JSONArray needToPickupList = jsonObject.getJSONArray("needToPickupList");
+            JSONArray pickedUpList = jsonObject.getJSONArray("pickedUpList");
+            String reportId = jsonObject.getString("_id");
+            ArrayList<Card> cards = new ArrayList<Card>();
+
+            for (int i = 0; i < needToPickupList.length(); i++) {
                 JSONObject studentToPick = (JSONObject)(needToPickupList.get(i));
-                String firstName = studentToPick.getString("firstname");
-                String lastName = studentToPick.getString("lastname");
-                String pickupLocation = studentToPick.getString("pickupLocation");
-                String id = studentToPick.getString("_id");
-                String classes = studentToPick.getString("classes");
-                String userImage = studentToPick.getString("userImage");
-                YYCard card = new YYCard(getActivity(), firstName + " " + lastName, R.layout.card_content, id, reportId);
+                YYCard card = new YYCard(getActivity(), R.layout.card_content, reportId, false, studentToPick);
+                cards.add(card);
+            }
+            for (int i = 0; i < pickedUpList.length(); i++) {
+                JSONObject studentToPick = (JSONObject)(pickedUpList.get(i));
+                YYCard card = new YYCard(getActivity(), R.layout.card_content, reportId, true, studentToPick);
 
                 cards.add(card);
-            } catch (JSONException e) {
-                Log.e(e.getMessage(), "");
             }
 
-        }
-        try {
             mCardArrayAdapter.clear();
             mCardArrayAdapter.addAll(cards);
             mCardArrayAdapter.notifyDataSetChanged();
-        }catch(Exception e){
-            Log.e("",e.getMessage());
+
+        } catch (JSONException e) {
+            Log.e(this.getTag(), e.getMessage());
         }
     }
 
 
     @Override
-    public void onSocketMessage(Object... jsonObject) {
-        try {
+    public void onSocketMessage(final Object... jsonObject) {
 
-            swipeLayout.setRefreshing(false);
+        swipeLayout.setRefreshing(false);
 
-            final JSONArray needToPickupList =
-                    ((JSONObject) jsonObject[0]).getJSONArray("needToPickupList");
-            reportId = ((JSONObject) jsonObject[0]).getString("_id");
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    initCards(needToPickupList, reportId);
-                }
-            });
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                initCards((JSONObject)jsonObject[0]);
+            }
+        });
 
-        } catch (JSONException je) {
-
-        }
     }
 
 }

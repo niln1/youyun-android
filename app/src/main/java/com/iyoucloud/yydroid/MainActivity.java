@@ -1,5 +1,6 @@
 package com.iyoucloud.yydroid;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -14,15 +15,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.Toast;
 import com.iyoucloud.yydroid.adapter.NavDrawerListAdapter;
 import com.iyoucloud.yydroid.fragment.HomeFragment;
 import com.iyoucloud.yydroid.fragment.PickupFragment;
 import com.iyoucloud.yydroid.model.NavDrawerItem;
 import com.iyoucloud.yydroid.util.OnSocketMessageListener;
-import com.iyoucloud.yydroid.util.OnToggleCheckboxListener;
+import com.iyoucloud.yydroid.util.OnToggleSwitchListener;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.apache.http.Header;
 import org.json.JSONObject;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends BaseActivity implements OnToggleCheckboxListener, OnSocketMessageListener {
+public class MainActivity extends BaseActivity implements OnToggleSwitchListener, OnSocketMessageListener {
 
 
     private DrawerLayout mDrawerLayout;
@@ -81,11 +82,15 @@ public class MainActivity extends BaseActivity implements OnToggleCheckboxListen
         navMenuIcons.recycle();
 
         // setting the nav drawer list adapter
-        adapter = new NavDrawerListAdapter(this, R.layout.drawer_list_item, dataList);
+        adapter = new NavDrawerListAdapter(this, R.layout.drawer_list_item, dataList, app);
         mDrawerList.setAdapter(adapter);
 
         // enabling action bar app icon and behaving it as toggle button
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setIcon(null);
+        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE
+                | ActionBar.DISPLAY_SHOW_HOME
+                | ActionBar.DISPLAY_HOME_AS_UP);
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB_MR2) {
             getActionBar().setHomeButtonEnabled(true);
@@ -115,6 +120,16 @@ public class MainActivity extends BaseActivity implements OnToggleCheckboxListen
             displayView(0, null);
         }
 
+        HomeFragment fragment = new HomeFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
+        app.connectSocket();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
         client.get(getApplicationContext(), app.URL_HELPER.getUserAccountUrl(), new AsyncHttpResponseHandler() {
 
             @Override
@@ -122,10 +137,8 @@ public class MainActivity extends BaseActivity implements OnToggleCheckboxListen
                 // called when response HTTP status is "200 OK"
                 try{
                     JSONObject jsonObject = parseJsonResponse(response);
-                    JSONObject resultObject = jsonObject.getJSONObject("result");
-                    String userImageUrl = resultObject.getString("userImage");
 
-                    adapter.updateProfile(app.SERVER_URL + userImageUrl);
+                    adapter.updateProfile(jsonObject);
                     Toast.makeText(getApplicationContext(),
                             "good good",
                             Toast.LENGTH_LONG).show();
@@ -142,12 +155,7 @@ public class MainActivity extends BaseActivity implements OnToggleCheckboxListen
                         Toast.LENGTH_LONG).show();
             }
         });
-        HomeFragment fragment = new HomeFragment();
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
-        app.connectSocket();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -275,7 +283,7 @@ public class MainActivity extends BaseActivity implements OnToggleCheckboxListen
     }
 
     @Override
-    public void onCheckboxToggled(CheckBox view, JSONObject jsonObject) {
+    public void onSwitchToggled(Switch view, JSONObject jsonObject) {
         boolean checked = view.isChecked();
 
         app.sendSocketMessage("pickup::teacher::pickup-student", jsonObject, this);
@@ -283,9 +291,14 @@ public class MainActivity extends BaseActivity implements OnToggleCheckboxListen
 
     @Override
     public void onSocketMessage(Object... jsonObject) {
-        Toast.makeText(getApplicationContext(),
-                "picked",
-                Toast.LENGTH_LONG).show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(),
+                        "picked",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     /**

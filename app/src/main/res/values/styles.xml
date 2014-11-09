@@ -8,7 +8,7 @@
         <item name="android:icon">@drawable/icon</item>
     </style>
 
-    <style name="yy_thumb_card_title">
+    <style name="yy_thumb_card_student_name">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@android:color/black</item>
         <item name="android:layout_marginTop">2dp</item>

@@ -27,7 +27,7 @@ import io.socket.SocketIOException;
 public class YYDroidApplication extends Application implements IOCallback {
 
     //replace with your server url and port number
-    public static final String SERVER_URL = "http://172.20.10.2:3000/";//"http://192.168.1.77:3000/";
+    public static final String SERVER_URL = "http://172.20.10.2:3000";//"http://192.168.1.77:3000";
     public static UrlHelper URL_HELPER;
     private AsyncHttpClient client;
     private PersistentCookieStore cookieStore;
@@ -68,6 +68,7 @@ public class YYDroidApplication extends Application implements IOCallback {
             socket = new SocketIO(URL_HELPER.getServerUrl());
             //todo fix index out of bound
             socket.addHeader("Cookie", "yy.sid=" + cookieStore.getCookies().get(0).getValue());
+
             socket.connect(this);
         } catch (Exception e) {
             Log.e("", e.getMessage());
@@ -87,7 +88,7 @@ public class YYDroidApplication extends Application implements IOCallback {
 
     @Override
     public void onDisconnect() {
-
+        Log.d("app", "wtf?");
     }
 
     @Override
@@ -97,12 +98,12 @@ public class YYDroidApplication extends Application implements IOCallback {
 
     @Override
     public void onMessage(String s, IOAcknowledge ioAcknowledge) {
-
+        Log.d("app", s);
     }
 
     @Override
     public void onMessage(JSONObject jsonObject, IOAcknowledge ioAcknowledge) {
-
+        Log.d("app", "???");
     }
 
     @Override
@@ -113,7 +114,7 @@ public class YYDroidApplication extends Application implements IOCallback {
 
     @Override
     public void onError(SocketIOException e) {
-
+        Log.e("app", e.getMessage());
     }
 
 }

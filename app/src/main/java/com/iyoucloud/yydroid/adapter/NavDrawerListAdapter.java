@@ -3,6 +3,7 @@ package com.iyoucloud.yydroid.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,11 +11,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.iyoucloud.yydroid.R;
+import com.iyoucloud.yydroid.YYDroidApplication;
 import com.iyoucloud.yydroid.helper.ImageLoadTask;
 import com.iyoucloud.yydroid.model.NavDrawerItem;
-
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.util.List;
 
 public class NavDrawerListAdapter extends ArrayAdapter<NavDrawerItem> {
@@ -23,15 +25,15 @@ public class NavDrawerListAdapter extends ArrayAdapter<NavDrawerItem> {
     List<NavDrawerItem> drawerItemList;
     int layoutResID;
     String profileImageUrl;
-    ImageView profileImageView;
+    private YYDroidApplication app;
 
     public NavDrawerListAdapter(Context context, int layoutResourceID,
-                               List<NavDrawerItem> listItems) {
+                               List<NavDrawerItem> listItems, YYDroidApplication app) {
         super(context, layoutResourceID, listItems);
         this.context = context;
         this.drawerItemList = listItems;
         this.layoutResID = layoutResourceID;
-
+        this.app = app;
     }
 
     @Override
@@ -66,7 +68,6 @@ public class NavDrawerListAdapter extends ArrayAdapter<NavDrawerItem> {
         if (dItem.isUserProfile()) {
             drawerHolder.itemLayout.setVisibility(LinearLayout.INVISIBLE);
             drawerHolder.userProfileLayout.setVisibility(LinearLayout.VISIBLE);
-            this.profileImageView = (ImageView) view.findViewById(R.id.profile_pic);
         }
         else {
 
@@ -81,9 +82,22 @@ public class NavDrawerListAdapter extends ArrayAdapter<NavDrawerItem> {
         return view;
     }
 
-    public void updateProfile(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
-        new ImageLoadTask(profileImageUrl, this.profileImageView).execute(null, null);
+    public void updateProfile(JSONObject jsonObject) {
+        try {
+            JSONObject resultObject = jsonObject.getJSONObject("result");
+            String userImageUrl = resultObject.getString("userImage");
+            String lastName = resultObject.getString("lastname");
+            String firstName = resultObject.getString("firstname");
+
+            this.profileImageUrl =  app.SERVER_URL + userImageUrl;
+            Activity activity = (Activity) this.context;
+            ImageView profileImageView = (ImageView) activity.findViewById(R.id.profile_pic);
+            TextView textView = (TextView) activity.findViewById(R.id.text_main_name);
+            textView.setText(lastName + " " + firstName);
+            new ImageLoadTask(profileImageUrl, profileImageView).execute(null, null);
+        } catch (JSONException e) {
+            Log.e(this.getClass().getSimpleName(), e.getMessage());
+        }
     }
 
     private static class DrawerItemHolder {
