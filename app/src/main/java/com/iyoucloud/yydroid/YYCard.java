@@ -1,11 +1,15 @@
 package com.iyoucloud.yydroid;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
+
+import com.iyoucloud.yydroid.fragment.PickupFragment;
 import com.iyoucloud.yydroid.util.OnToggleSwitchListener;
 
 import org.json.JSONException;
@@ -26,6 +30,7 @@ public class YYCard extends Card {
     private boolean pickedUp;
     private String pickupTime;
     private String pickupLocation;
+    private PickupFragment parentFragment;
 //
 //    public YYCard(Context context, String titleHeader, String titleMain) {
 //        super(context, R.layout.card_thumbnail_layout);
@@ -49,8 +54,9 @@ public class YYCard extends Card {
 //    }
 
 
-    public YYCard(Context context, int innerLayout, String reportId, boolean pickedUp, JSONObject studentJSON) {
+    public YYCard(Context context, PickupFragment parent, int innerLayout, String reportId, boolean pickedUp, JSONObject studentJSON) {
         super(context, innerLayout);
+        parentFragment = parent;
         try {
             mListener = (OnToggleSwitchListener) context;
         } catch (ClassCastException e) {
@@ -86,7 +92,7 @@ public class YYCard extends Card {
 
 
     @Override
-    public void setupInnerViewElements(ViewGroup parent, View view) {
+    public void setupInnerViewElements(final ViewGroup parent, View view) {
         TextView mTitle = (TextView) parent.findViewById(R.id.yy_thumb_card_student_name);
         if (mTitle != null){
             mTitle.setText(mTitleHeader);
@@ -96,10 +102,10 @@ public class YYCard extends Card {
         TextView mPickupTime = (TextView) parent.findViewById(R.id.yy_thumb_card_pickup_time);
         mPickupTime.setText(pickupTime);
 
-        final Switch aSwitch = (Switch) parent.findViewById(R.id.yy_thumb_card_switch);
-        aSwitch.setChecked(pickedUp);
+        final ToggleButton toggleButton = (ToggleButton) parent.findViewById(R.id.toggleButton_pickup);
+        toggleButton.setChecked(pickedUp);
 
-        aSwitch.setOnClickListener(new View.OnClickListener() {
+        toggleButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -107,11 +113,11 @@ public class YYCard extends Card {
                 try {
                     jsonObject.put("reportID", reportId);
                     jsonObject.put("studentID", id);
-                    jsonObject.put("pickedUp", String.valueOf(((Switch)v).isChecked()));
+                    jsonObject.put("pickedUp", String.valueOf(((ToggleButton)v).isChecked()));
                 } catch (JSONException e) {
 
                 }
-                mListener.onSwitchToggled((Switch) v, jsonObject);
+                mListener.onSwitchToggled((ToggleButton) v, jsonObject, parentFragment);
             }
         });
     }

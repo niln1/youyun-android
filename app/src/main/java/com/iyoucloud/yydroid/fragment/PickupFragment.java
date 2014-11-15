@@ -8,6 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.widget.RadioGroup;
+import android.widget.Toast;
+
 import com.iyoucloud.yydroid.R;
 import com.iyoucloud.yydroid.YYCard;
 import com.iyoucloud.yydroid.YYDroidApplication;
@@ -15,18 +18,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
+
+import info.hoang8f.android.segmented.SegmentedGroup;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.view.CardListView;
 
 
-public class PickupFragment extends BaseFragment {
+public class PickupFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener {
 
     YYDroidApplication app;
     CardArrayAdapter mCardArrayAdapter;
     CardListView listView;
     Activity activity;
     SwipeRefreshLayout swipeLayout;
+    ArrayList<Card> pickedUpCards;
+    ArrayList<Card> toPickCards;
+
+    SegmentedGroup segmentedGroup;
 
     public PickupFragment(){
 
@@ -37,6 +46,8 @@ public class PickupFragment extends BaseFragment {
                              Bundle savedInstanceState) {
 
         app = (YYDroidApplication)(getActivity().getApplication());
+        pickedUpCards = new ArrayList<Card>();
+        toPickCards = new ArrayList<Card>();
 
         return inflater.inflate(R.layout.fragment_pickup, container, false);
 
@@ -50,6 +61,11 @@ public class PickupFragment extends BaseFragment {
         swipeLayout = (SwipeRefreshLayout)
                 getActivity().findViewById(R.id.swipe_refresh_layout_pickup);
         swipeLayout.setOnRefreshListener(this);
+
+        segmentedGroup = (SegmentedGroup) getActivity().findViewById(R.id.segmentgroup_pickup);
+        segmentedGroup.setOnCheckedChangeListener(this);
+        segmentedGroup.setTintColor(getResources().getColor(R.color.fg_color),
+                getResources().getColor(R.color.school_dark_color));
 
         ArrayList<Card> cards = new ArrayList<Card>();
 
@@ -74,22 +90,31 @@ public class PickupFragment extends BaseFragment {
             JSONArray needToPickupList = jsonObject.getJSONArray("needToPickupList");
             JSONArray pickedUpList = jsonObject.getJSONArray("pickedUpList");
             String reportId = jsonObject.getString("_id");
-            ArrayList<Card> cards = new ArrayList<Card>();
+            toPickCards.clear();
+            pickedUpCards.clear();
 
             for (int i = 0; i < needToPickupList.length(); i++) {
                 JSONObject studentToPick = (JSONObject)(needToPickupList.get(i));
-                YYCard card = new YYCard(getActivity(), R.layout.card_content, reportId, false, studentToPick);
-                cards.add(card);
+                YYCard card = new YYCard(getActivity(), this, R.layout.card_content, reportId, false, studentToPick);
+                toPickCards.add(card);
             }
+
             for (int i = 0; i < pickedUpList.length(); i++) {
                 JSONObject studentToPick = (JSONObject)(pickedUpList.get(i));
-                YYCard card = new YYCard(getActivity(), R.layout.card_content, reportId, true, studentToPick);
+                YYCard card = new YYCard(getActivity(), this, R.layout.card_content, reportId, true, studentToPick);
 
-                cards.add(card);
+                pickedUpCards.add(card);
             }
 
             mCardArrayAdapter.clear();
-            mCardArrayAdapter.addAll(cards);
+            if(segmentedGroup.getCheckedRadioButtonId() == R.id.segment_picked_button) {
+                mCardArrayAdapter.addAll(pickedUpCards);
+            } else if(segmentedGroup.getCheckedRadioButtonId() == R.id.segment_to_pick_button) {
+                mCardArrayAdapter.addAll(toPickCards);
+            } else {
+                //exception
+            }
+
             mCardArrayAdapter.notifyDataSetChanged();
 
         } catch (JSONException e) {
@@ -97,19 +122,52 @@ public class PickupFragment extends BaseFragment {
         }
     }
 
-
     @Override
-    public void onSocketMessage(final Object... jsonObject) {
+    public void onSocketMessage(String event, final Object... jsonObject) {
 
-        swipeLayout.setRefreshing(false);
+        final PickupFragment self = this;
 
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                initCards((JSONObject)jsonObject[0]);
-            }
-        });
+        if(event.equals("pickup::teacher::pickup-student::success")) {
+
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(app.getApplicationContext(),
+                            "picked",
+                            Toast.LENGTH_LONG).show();
+                    //update pick table here
+                    self.onRefresh();
+
+                }
+            });
+        } else {
+
+            swipeLayout.setRefreshing(false);
+
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    initCards((JSONObject)jsonObject[0]);
+                }
+            });
+
+        }
 
     }
 
+    @Override
+    public void onCheckedChanged(RadioGroup radioGroup, int i) {
+        switch (i) {
+            case R.id.segment_picked_button:
+                mCardArrayAdapter.clear();
+                mCardArrayAdapter.addAll(pickedUpCards);
+                mCardArrayAdapter.notifyDataSetChanged();
+                break;
+            case R.id.segment_to_pick_button:
+                mCardArrayAdapter.clear();
+                mCardArrayAdapter.addAll(toPickCards);
+                mCardArrayAdapter.notifyDataSetChanged();
+                break;
+        }
+    }
 }

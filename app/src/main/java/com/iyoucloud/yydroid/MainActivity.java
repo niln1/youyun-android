@@ -18,6 +18,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
+import android.widget.ToggleButton;
+
 import com.iyoucloud.yydroid.adapter.NavDrawerListAdapter;
 import com.iyoucloud.yydroid.fragment.HomeFragment;
 import com.iyoucloud.yydroid.fragment.PickupFragment;
@@ -102,13 +104,13 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
                 R.string.app_name // nav drawer close - description for accessibility
         ){
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(mTitle);
+            //    getActionBar().setTitle(mDrawerTitle);
                 // calling onPrepareOptionsMenu() to show action bar icons
                 invalidateOptionsMenu();
             }
 
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(mDrawerTitle);
+           //     getActionBar().setTitle(mDrawerTitle);
                 // calling onPrepareOptionsMenu() to hide action bar icons
                 invalidateOptionsMenu();
             }
@@ -271,7 +273,7 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
             // update selected item and title, then close the drawer
             mDrawerList.setItemChecked(position, true);
             mDrawerList.setSelection(position);
-            setTitle(navMenuTitles[position]);
+            setTitle(navMenuTitles[position-1]);
             mDrawerLayout.closeDrawer(mDrawerList);
         } else {
             //selected on user profile
@@ -283,14 +285,12 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
     }
 
     @Override
-    public void onSwitchToggled(Switch view, JSONObject jsonObject) {
-        boolean checked = view.isChecked();
-
-        app.sendSocketMessage("pickup::teacher::pickup-student", jsonObject, this);
+    public void onSwitchToggled(ToggleButton view, JSONObject jsonObject, PickupFragment fragment) {
+        app.sendSocketMessage("pickup::teacher::pickup-student", jsonObject, fragment);
     }
 
     @Override
-    public void onSocketMessage(Object... jsonObject) {
+    public void onSocketMessage(String event, Object... jsonObject) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

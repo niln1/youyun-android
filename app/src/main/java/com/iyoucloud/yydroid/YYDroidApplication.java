@@ -4,17 +4,13 @@ package com.iyoucloud.yydroid;
 import android.app.Application;
 import android.util.Log;
 
-import com.iyoucloud.yydroid.fragment.PickupFragment;
 import com.iyoucloud.yydroid.helper.UrlHelper;
 import com.iyoucloud.yydroid.util.OnSocketMessageListener;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.PersistentCookieStore;
 
 import org.apache.http.cookie.Cookie;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +23,7 @@ import io.socket.SocketIOException;
 public class YYDroidApplication extends Application implements IOCallback {
 
     //replace with your server url and port number
-    public static final String SERVER_URL = "http://172.20.10.2:3000";//"http://192.168.1.77:3000";
+    public static final String SERVER_URL = "http://172.20.10.3:3000/";//"http://192.168.1.77:3000";
     public static UrlHelper URL_HELPER;
     private AsyncHttpClient client;
     private PersistentCookieStore cookieStore;
@@ -109,7 +105,7 @@ public class YYDroidApplication extends Application implements IOCallback {
     @Override
     public void on(String event, IOAcknowledge ioAcknowledge, Object... jsonObject) {
         OnSocketMessageListener listener = listenersMap.get(event);
-        listener.onSocketMessage(jsonObject);
+        listener.onSocketMessage(event, jsonObject);
     }
 
     @Override

@@ -14,13 +14,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp" />
 
-    <Switch
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/yy_thumb_card_switch"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"  />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,6 +32,20 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp" />
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/toggleButton_pickup"
+        android:checked="false"
+        android:layout_alignTop="@+id/yy_thumb_card_student_name"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="40dp"
+        android:background="@color/school_dark_color"
+        android:shadowColor="@color/fg_color"
+        android:textOff="Pick"
+        android:textOn="Unpick" />
 
 
 </RelativeLayout>

@@ -50,7 +50,7 @@ public class BaseFragment extends Fragment implements IOCallback, SwipeRefreshLa
     }
 
     @Override
-    public void onSocketMessage(Object... jsonObject) {
+    public void onSocketMessage(String event, Object... jsonObject) {
 
     }
 }
