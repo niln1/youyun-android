@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.iyoucloud.yydroid.R;
@@ -20,6 +21,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import info.hoang8f.android.segmented.SegmentedGroup;
+import io.socket.SocketIOException;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.view.CardListView;
@@ -123,19 +125,42 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
     }
 
     @Override
+    public void onError(SocketIOException e) {
+        e.getMessage();
+    }
+    @Override
+    public void onDisconnect() {
+        System.out.println();
+    }
+
+    @Override
     public void onSocketMessage(String event, final Object... jsonObject) {
 
         final PickupFragment self = this;
+        if(event.equals("connected") || event.equals("disconnected") || event.equals("connecting")) {
+            final String status = event;
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    TextView textView = (TextView) getActivity().findViewById(R.id.connection_status);
+                    textView.setText(status);
+                }
+            });
+
+            return;
+        }
 
         if(event.equals("pickup::teacher::pickup-student::success")) {
 
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
                     Toast.makeText(app.getApplicationContext(),
-                            "picked",
+                            segmentedGroup.getCheckedRadioButtonId() == R.id.segment_to_pick_button ? "picked" : "undo picked",
                             Toast.LENGTH_LONG).show();
                     //update pick table here
+
                     self.onRefresh();
 
                 }
@@ -144,6 +169,10 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
 
             swipeLayout.setRefreshing(false);
 
+            if(((JSONObject) jsonObject[0]).length() == 0) {
+                //todo show empty view here
+                return;
+            }
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

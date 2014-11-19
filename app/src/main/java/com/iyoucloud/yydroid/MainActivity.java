@@ -125,7 +125,7 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
         HomeFragment fragment = new HomeFragment();
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
-        app.connectSocket();
+        app.connectSocket(this);
     }
 
     @Override
@@ -235,7 +235,9 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
                 Toast.makeText(getApplicationContext(),
                         throwable.getMessage(),
                         Toast.LENGTH_LONG).show();
-            }
+                app.clearCookie();
+                Intent intent = new Intent(self, LoginActivity.class);
+                startActivity(intent);            }
         });
     }
 
@@ -291,14 +293,15 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
 
     @Override
     public void onSocketMessage(String event, Object... jsonObject) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(),
-                        "picked",
-                        Toast.LENGTH_LONG).show();
-            }
-        });
+
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Toast.makeText(getApplicationContext(),
+//                        "picked",
+//                        Toast.LENGTH_LONG).show();
+//            }
+//        });
     }
 
     /**

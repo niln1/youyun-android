@@ -14,8 +14,11 @@ import com.iyoucloud.yydroid.util.OnToggleSwitchListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
@@ -54,7 +57,7 @@ public class YYCard extends Card {
 //    }
 
 
-    public YYCard(Context context, PickupFragment parent, int innerLayout, String reportId, boolean pickedUp, JSONObject studentJSON) {
+    public YYCard(Context context, PickupFragment parent, int innerLayout, String reportId, boolean pickedUp, JSONObject jsonObject) {
         super(context, innerLayout);
         parentFragment = parent;
         try {
@@ -63,28 +66,50 @@ public class YYCard extends Card {
             throw new ClassCastException(context.toString() + " must implement OnToggleCheckboxListener");
         }
         this.reportId = reportId;
+        JSONObject pickupDetail = null;
 
         try {
+            String pickedUpTime = null;
+            JSONObject pickedBy = null;
+            JSONObject studentJSON = jsonObject;
+            if(jsonObject.has("student")){
+                studentJSON = jsonObject.getJSONObject("student");
+                pickedUpTime = jsonObject.getString("pickedUpTime");
+                pickedBy = jsonObject.getJSONObject("pickedBy");
+
+                try {
+                    Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(pickedUpTime);
+                    String formattedDate = new SimpleDateFormat("hh:mm").format(date);
+                    this.pickupTime = formattedDate;
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    this.pickupTime = pickedUpTime;
+                }
+
+            } else {
+                pickupDetail = studentJSON.getJSONObject("studentPickupDetail");
+
+                SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
+                String weekDay;
+                Calendar calendar = Calendar.getInstance();
+                weekDay = dayFormat.format(calendar.getTime()).toLowerCase();
+                this.pickupTime = pickupDetail.getString(weekDay + "PickupTime");
+
+            }
             String firstName = studentJSON.getString("firstname");
             String lastName = studentJSON.getString("lastname");
             String pickupLocation = studentJSON.getString("pickupLocation");
             String id = studentJSON.getString("_id");
             String classes = studentJSON.getString("classes");
             String userImage = studentJSON.getString("userImage");
-            JSONObject pickupDetail = studentJSON.getJSONObject("studentPickupDetail");
-            String weekDay;
-            SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
 
-            Calendar calendar = Calendar.getInstance();
-            weekDay = dayFormat.format(calendar.getTime()).toLowerCase();
             this.mTitleHeader = firstName + " " + lastName;
             this.id = id;
             this.pickedUp = pickedUp;
-            this.pickupTime = pickupDetail.getString(weekDay + "PickupTime");
             this.pickupLocation = pickupLocation;
 
         } catch (JSONException e) {
-
+            e.getMessage();
         }
 
         init(context);

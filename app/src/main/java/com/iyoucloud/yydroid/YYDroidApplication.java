@@ -2,7 +2,9 @@ package com.iyoucloud.yydroid;
 
 
 import android.app.Application;
+import android.os.CountDownTimer;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.iyoucloud.yydroid.helper.UrlHelper;
 import com.iyoucloud.yydroid.util.OnSocketMessageListener;
@@ -23,7 +25,7 @@ import io.socket.SocketIOException;
 public class YYDroidApplication extends Application implements IOCallback {
 
     //replace with your server url and port number
-    public static final String SERVER_URL = "http://172.20.10.3:3000/";//"http://192.168.1.77:3000";
+    public static final String SERVER_URL = "http://192.168.1.77:3000";
     public static UrlHelper URL_HELPER;
     private AsyncHttpClient client;
     private PersistentCookieStore cookieStore;
@@ -59,7 +61,18 @@ public class YYDroidApplication extends Application implements IOCallback {
         cookieStore.clear();
     }
 
-    public void connectSocket() {
+    public void connectSocket(OnSocketMessageListener listener) {
+        listenersMap.put("connect", listener);
+        listenersMap.put("all::failure", listener);
+
+        this.connectSocket();
+    }
+
+    private void connectSocket() {
+        if(socket != null && socket.isConnected()){
+            return;
+        }
+
         try {
             socket = new SocketIO(URL_HELPER.getServerUrl());
             //todo fix index out of bound
@@ -69,27 +82,47 @@ public class YYDroidApplication extends Application implements IOCallback {
         } catch (Exception e) {
             Log.e("", e.getMessage());
         }
-
     }
 
     public void sendSocketMessage(String message, OnSocketMessageListener listener) {
         listenersMap.put(message + "::success", listener);
+        listenersMap.put(message + "::fail", listener);
+
         socket.emit(message);
     }
 
     public void sendSocketMessage(String message, JSONObject jsonObject, OnSocketMessageListener listener) {
         listenersMap.put(message + "::success", listener);
+        listenersMap.put(message + "::fail", listener);
+
         socket.emit(message, jsonObject);
     }
 
     @Override
     public void onDisconnect() {
-        Log.d("app", "wtf?");
+        OnSocketMessageListener listener = listenersMap.get("disconnect");
+        listener.onSocketMessage("disconnected");
+
+        new CountDownTimer(5000,1000){
+
+            @Override
+            public void onTick(long milliseconds){
+
+            }
+
+            @Override
+            public void onFinish(){
+                connectSocket();
+            }
+        }.start();
+
     }
 
     @Override
     public void onConnect() {
 
+        OnSocketMessageListener listener = listenersMap.get("connect");
+        listener.onSocketMessage("connected");
     }
 
     @Override
