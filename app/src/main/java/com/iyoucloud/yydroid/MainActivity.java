@@ -28,6 +28,7 @@ import com.iyoucloud.yydroid.util.OnSocketMessageListener;
 import com.iyoucloud.yydroid.util.OnToggleSwitchListener;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.apache.http.Header;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -287,8 +288,8 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
     }
 
     @Override
-    public void onSwitchToggled(ToggleButton view, JSONObject jsonObject, PickupFragment fragment) {
-        app.sendSocketMessage("pickup::teacher::pickup-student", jsonObject, fragment);
+    public void onSwitchToggled(ToggleButton view, JSONArray jsonArray, PickupFragment fragment) {
+        app.sendSocketMessage("pickup::teacher::pickup-student", jsonArray, fragment);
     }
 
     @Override

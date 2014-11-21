@@ -12,6 +12,7 @@ import android.widget.ToggleButton;
 import com.iyoucloud.yydroid.fragment.PickupFragment;
 import com.iyoucloud.yydroid.util.OnToggleSwitchListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -142,7 +143,9 @@ public class YYCard extends Card {
                 } catch (JSONException e) {
 
                 }
-                mListener.onSwitchToggled((ToggleButton) v, jsonObject, parentFragment);
+                JSONArray jsonArray = new JSONArray();
+                jsonArray.put(jsonObject);
+                mListener.onSwitchToggled((ToggleButton) v, jsonArray, parentFragment);
             }
         });
     }

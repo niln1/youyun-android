@@ -8,10 +8,11 @@ import android.widget.ToggleButton;
 
 import com.iyoucloud.yydroid.fragment.PickupFragment;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public interface OnToggleSwitchListener {
 
-    public void onSwitchToggled(ToggleButton view, JSONObject jsonObject, PickupFragment fragment);
+    public void onSwitchToggled(ToggleButton view, JSONArray jsonObject, PickupFragment fragment);
 
 }

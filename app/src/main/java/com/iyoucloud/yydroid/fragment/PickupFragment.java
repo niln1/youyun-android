@@ -169,16 +169,20 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
 
             swipeLayout.setRefreshing(false);
 
-            if(((JSONObject) jsonObject[0]).length() == 0) {
-                //todo show empty view here
-                return;
-            }
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    initCards((JSONObject)jsonObject[0]);
+            try {
+                final JSONObject object = ((JSONObject) (((JSONArray) jsonObject[0]).get(0)));
+                if(object.length() != 0) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initCards(object);
+                        }
+                    });
                 }
-            });
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
 
         }
 
