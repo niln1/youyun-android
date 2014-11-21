@@ -19,12 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.socket.IOAcknowledge;
-import io.socket.IOCallback;
-import io.socket.SocketIO;
-import io.socket.SocketIOException;
-
-public class YYDroidApplication extends Application implements IOCallback,
+public class YYDroidApplication extends Application implements
         SocketIOClient.SocketIOConnectCallback,
         SocketIOClient.JSONCallback,
         SocketIOClient.StringCallback,
@@ -36,7 +31,6 @@ public class YYDroidApplication extends Application implements IOCallback,
     public static UrlHelper URL_HELPER;
     private AsyncHttpClient client;
     private PersistentCookieStore cookieStore;
-    private SocketIO socket;
     private Map<String, OnSocketMessageListener> listenersMap;
     private SocketIOClient socketIOClient;
 
@@ -77,7 +71,7 @@ public class YYDroidApplication extends Application implements IOCallback,
     }
 
     private void connectSocket() {
-        if(socket != null && socket.isConnected()){
+        if(socketIOClient != null && socketIOClient.isConnected()){
             return;
         }
 
@@ -92,12 +86,6 @@ public class YYDroidApplication extends Application implements IOCallback,
                     com.koushikdutta.async.http.AsyncHttpClient.getDefaultInstance(),
                     request,
                     this);
-
-//            socket = new SocketIO(URL_HELPER.getServerUrl());
-//            //todo fix index out of bound
-//            socket.addHeader("Cookie", "yy.sid=" + cookieStore.getCookies().get(0).getValue());
-//
-//            socket.connect(this);
         } catch (Exception e) {
             Log.e("", e.getMessage());
         }
@@ -109,16 +97,8 @@ public class YYDroidApplication extends Application implements IOCallback,
         JSONArray tmp = new JSONArray();
         tmp.put("");
         socketIOClient.emit(message, tmp);
-    //    socketIOClient.emit(message);
-    //    socket.emit(message);
     }
 
-    public void sendSocketMessage(String message, JSONObject jsonObject, OnSocketMessageListener listener) {
-        listenersMap.put(message + "::success", listener);
-        listenersMap.put(message + "::fail", listener);
-
-   //     socketIOClient.emit(message, jsonObject);
-    }
 
     public void sendSocketMessage(String message, JSONArray jsonArray, OnSocketMessageListener listener) {
         listenersMap.put(message + "::success", listener);
@@ -128,67 +108,20 @@ public class YYDroidApplication extends Application implements IOCallback,
     }
 
     @Override
-    public void onDisconnect() {
-        OnSocketMessageListener listener = listenersMap.get("disconnect");
-        listener.onSocketMessage("disconnected");
-
-        new CountDownTimer(5000,1000){
-
-            @Override
-            public void onTick(long milliseconds){
-
-            }
-
-            @Override
-            public void onFinish(){
-                connectSocket();
-            }
-        }.start();
-
-    }
-
-    @Override
-    public void onConnect() {
-
-        OnSocketMessageListener listener = listenersMap.get("connect");
-        listener.onSocketMessage("connected");
-    }
-
-    @Override
-    public void onMessage(String s, IOAcknowledge ioAcknowledge) {
-        Log.d("app", s);
-    }
-
-    @Override
-    public void onMessage(JSONObject jsonObject, IOAcknowledge ioAcknowledge) {
-        Log.d("app", "???");
-    }
-
-    @Override
-    public void on(String event, IOAcknowledge ioAcknowledge, Object... jsonObject) {
-        OnSocketMessageListener listener = listenersMap.get(event);
-        listener.onSocketMessage(event, jsonObject);
-    }
-
-    @Override
-    public void onError(SocketIOException e) {
-        Log.e("app", e.getMessage());
-    }
-
-
-    @Override
     public void onConnectCompleted(Exception ex, SocketIOClient client) {
         if (ex != null) {
             ex.printStackTrace();
             return;
         }
         this.socketIOClient = client;
+
+        OnSocketMessageListener listener = listenersMap.get("connect");
+        listener.onSocketMessage("connected");
+
         client.setStringCallback(this);
         client.setEventCallback(this);
         client.setJSONCallback(this);
         client.setClosedCallback(this);
-
-
     }
 
     @Override
@@ -209,6 +142,20 @@ public class YYDroidApplication extends Application implements IOCallback,
 
     @Override
     public void onCompleted(Exception e) {
-        System.out.println();
+        OnSocketMessageListener listener = listenersMap.get("disconnect");
+        listener.onSocketMessage("disconnected");
+
+        new CountDownTimer(5000,1000){
+
+            @Override
+            public void onTick(long milliseconds){
+
+            }
+
+            @Override
+            public void onFinish(){
+                connectSocket();
+            }
+        }.start();
     }
 }
