@@ -179,8 +179,8 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
         }
         // Handle action bar actions click
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
+//            case R.id.action_settings:
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -193,7 +193,7 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
     public boolean onPrepareOptionsMenu(Menu menu) {
         // if nav drawer is opened, hide the action items
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
+      //  menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -301,6 +301,17 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
 
     @Override
     public void onSocketMessage(String event, Object... jsonObject) {
+        if(event.equals("connected") || event.contains("disconnected") || event.equals("connecting")) {
+            final String status = event;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    getActionBar().setSubtitle(status);
+                }
+            });
+
+        //    return;
+        }
         //forward the event to current fragment
         currentFragment.onSocketMessage(event, jsonObject);
 //        runOnUiThread(new Runnable() {

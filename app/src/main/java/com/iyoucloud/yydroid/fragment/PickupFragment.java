@@ -58,17 +58,6 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        TextView textView = (TextView) getActivity().findViewById(R.id.connection_status);
-        if (app.isSocketAlive()) {
-            textView.setText("connected");
-        } else {
-            textView.setText("disconnected");
-        }
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         activity = this.getActivity();
@@ -150,18 +139,18 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
     public void onSocketMessage(String event, final Object... jsonObject) {
 
         final PickupFragment self = this;
-        if(event.equals("connected") || event.equals("disconnected") || event.equals("connecting")) {
-            final String status = event;
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    TextView textView = (TextView) getActivity().findViewById(R.id.connection_status);
-                    textView.setText(status);
-                }
-            });
-
-            return;
-        }
+//        if(event.equals("connected") || event.equals("disconnected") || event.equals("connecting")) {
+//            final String status = event;
+//            activity.runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    TextView textView = (TextView) getActivity().findViewById(R.id.connection_status);
+//                    textView.setText(status);
+//                }
+//            });
+//
+//            return;
+//        }
 
         if(event.equals("pickup::teacher::pickup-student::success")) {
 
@@ -183,15 +172,23 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
             swipeLayout.setRefreshing(false);
 
             try {
-                final JSONObject object = ((JSONObject) (((JSONArray) jsonObject[0]).get(0)));
-                if(object.length() != 0) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initCards(object);
-                        }
-                    });
+                if(jsonObject.length == 0) {
+                    return;
                 }
+
+                JSONArray jsonArray = ((JSONArray) jsonObject[0]);
+                if(jsonArray.length() > 0) {
+                    final JSONObject object = ((JSONObject) (jsonArray.get(0)));
+                    if(object.length() > 0) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initCards(object);
+                            }
+                        });
+                    }
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }

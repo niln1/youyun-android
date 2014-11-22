@@ -27,7 +27,7 @@ public class YYDroidApplication extends Application implements
         CompletedCallback {
 
     //replace with your server url and port number
-    public static final String SERVER_URL = "http://172.20.10.2:3000";//"http://192.168.1.77:3000";
+    public static final String SERVER_URL = "http://172.20.10.3:3000";// "http://172.20.10.2:3000";//"http://192.168.1.77:3000";
     public static UrlHelper URL_HELPER;
     private AsyncHttpClient client;
     private PersistentCookieStore cookieStore;
@@ -69,6 +69,8 @@ public class YYDroidApplication extends Application implements
 
     public void connectSocket(OnSocketMessageListener listener) {
         listenersMap.put("connect", listener);
+        listenersMap.put("disconnect", listener);
+        listenersMap.put("connecting", listener);
         listenersMap.put("all::failure", listener);
 
         this.connectSocket();
@@ -80,6 +82,9 @@ public class YYDroidApplication extends Application implements
         }
 
         try {
+            OnSocketMessageListener listener = listenersMap.get("connecting");
+            listener.onSocketMessage("connecting");
+
             Uri.Builder b = Uri.parse(URL_HELPER.getServerUrl()).buildUpon();
             b.appendQueryParameter("Cookie", "yy.sid=" + cookieStore.getCookies().get(0).getValue());
 
@@ -115,6 +120,10 @@ public class YYDroidApplication extends Application implements
     public void onConnectCompleted(Exception ex, SocketIOClient client) {
         if (ex != null) {
             ex.printStackTrace();
+            OnSocketMessageListener listener = listenersMap.get("disconnect");
+            listener.onSocketMessage("disconnected");
+
+            connectCountDown();
             return;
         }
         this.socketIOClient = client;
@@ -147,7 +156,11 @@ public class YYDroidApplication extends Application implements
     @Override
     public void onCompleted(Exception e) {
         OnSocketMessageListener listener = listenersMap.get("disconnect");
-        listener.onSocketMessage("disconnected");
+        listener.onSocketMessage("disconnected123");
+        connectCountDown();
+    }
+
+    private void connectCountDown() {
 
         new CountDownTimer(5000,1000){
 
