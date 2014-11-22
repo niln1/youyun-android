@@ -3,6 +3,7 @@ package com.iyoucloud.yydroid;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.iyoucloud.yydroid.adapter.NavDrawerListAdapter;
+import com.iyoucloud.yydroid.fragment.BaseFragment;
 import com.iyoucloud.yydroid.fragment.HomeFragment;
 import com.iyoucloud.yydroid.fragment.PickupFragment;
 import com.iyoucloud.yydroid.model.NavDrawerItem;
@@ -40,6 +42,8 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
+    private BaseFragment currentFragment;
+
 
     // nav drawer title
 
@@ -126,6 +130,7 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
         HomeFragment fragment = new HomeFragment();
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
+        currentFragment = fragment;
         app.connectSocket(this);
     }
 
@@ -248,7 +253,7 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
      * */
     private void displayView(int position, View view) {
         // update the main content by replacing fragments
-        Fragment fragment = null;
+        BaseFragment fragment = null;
         switch (position) {
             //user avator
             case 0:
@@ -270,8 +275,10 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
         }
 
         if (fragment != null) {
+
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
+            currentFragment = fragment;
 
             // update selected item and title, then close the drawer
             mDrawerList.setItemChecked(position, true);
@@ -294,7 +301,8 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
 
     @Override
     public void onSocketMessage(String event, Object... jsonObject) {
-
+        //forward the event to current fragment
+        currentFragment.onSocketMessage(event, jsonObject);
 //        runOnUiThread(new Runnable() {
 //            @Override
 //            public void run() {
@@ -316,5 +324,12 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
             displayView(position, view);
         }
     }
-
+//
+//    public BaseFragment getActiveFragment() {
+//        if (getFragmentManager().getBackStackEntryCount() == 0) {
+//            return null;
+//        }
+//        String tag = getFragmentManager().getBackStackEntryAt(getFragmentManager().getBackStackEntryCount() - 1).getName();
+//        return (BaseFragment) getFragmentManager().findFragmentByTag(tag);
+//    }
 }

@@ -37,7 +37,8 @@
         android:text="connection status"
         android:id="@+id/connection_status"
         android:gravity="center"
-        android:textColor="@color/fg_color" />
+        android:textColor="@color/fg_color"
+        />
 
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"

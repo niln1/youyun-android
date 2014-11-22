@@ -25,12 +25,15 @@ public class HomeFragment extends BaseFragment {
 
     public HomeFragment(){}
 
+    private String name;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         app = (YYDroidApplication)(getActivity().getApplication());
+        name = "fragment_home";
         return rootView;
     }
 

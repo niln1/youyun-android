@@ -36,6 +36,7 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
     SwipeRefreshLayout swipeLayout;
     ArrayList<Card> pickedUpCards;
     ArrayList<Card> toPickCards;
+    private String name;
 
     SegmentedGroup segmentedGroup;
 
@@ -50,9 +51,21 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
         app = (YYDroidApplication)(getActivity().getApplication());
         pickedUpCards = new ArrayList<Card>();
         toPickCards = new ArrayList<Card>();
+        name = "fragment_pickup";
 
         return inflater.inflate(R.layout.fragment_pickup, container, false);
 
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        TextView textView = (TextView) getActivity().findViewById(R.id.connection_status);
+        if (app.isSocketAlive()) {
+            textView.setText("connected");
+        } else {
+            textView.setText("disconnected");
+        }
     }
 
     @Override

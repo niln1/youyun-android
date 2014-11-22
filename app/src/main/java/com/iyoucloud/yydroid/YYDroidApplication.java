@@ -51,6 +51,10 @@ public class YYDroidApplication extends Application implements
         return cookieStore.getCookies();
     }
 
+    public boolean isSocketAlive() {
+        return socketIOClient.isConnected();
+    }
+
     public boolean isAuthed() {
         return !cookieStore.getCookies().isEmpty();
     }

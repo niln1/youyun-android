@@ -2,7 +2,9 @@ package com.iyoucloud.yydroid.fragment;
 
 import android.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.widget.TextView;
 
+import com.iyoucloud.yydroid.R;
 import com.iyoucloud.yydroid.util.OnSocketMessageListener;
 
 import org.json.JSONObject;
@@ -13,6 +15,18 @@ import io.socket.SocketIOException;
 
 
 public class BaseFragment extends Fragment implements IOCallback, SwipeRefreshLayout.OnRefreshListener, OnSocketMessageListener {
+
+    protected String name;
+
+    public String getName() {
+        return name;
+    }
+
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+    }
 
     @Override
     public void onDisconnect() {
