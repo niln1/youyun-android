@@ -15,6 +15,8 @@ import com.loopj.android.http.PersistentCookieStore;
 import org.apache.http.cookie.Cookie;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +29,13 @@ public class YYDroidApplication extends Application implements
         CompletedCallback {
 
     //replace with your server url and port number
-    public static final String SERVER_URL = "http://172.20.10.3:3000";// "http://172.20.10.2:3000";//"http://192.168.1.77:3000";
+    public static final String SERVER_URL = "http://172.20.10.2:3000";//"http://192.168.1.77:3000";
     public static UrlHelper URL_HELPER;
     private AsyncHttpClient client;
     private PersistentCookieStore cookieStore;
     private Map<String, OnSocketMessageListener> listenersMap;
     private SocketIOClient socketIOClient;
+    private CountDownTimer timer;
 
     @Override
     public void onCreate() {
@@ -56,7 +59,8 @@ public class YYDroidApplication extends Application implements
     }
 
     public boolean isAuthed() {
-        return !cookieStore.getCookies().isEmpty();
+        return !cookieStore.getCookies().isEmpty()
+                && !cookieStore.getCookies().get(0).isExpired(new Date());
     }
 
     public AsyncHttpClient getClient() {
@@ -118,10 +122,13 @@ public class YYDroidApplication extends Application implements
 
     @Override
     public void onConnectCompleted(Exception ex, SocketIOClient client) {
-        if (ex != null) {
+        if ((ex != null && client == null)
+                || (ex != null && client != null && !client.isConnected())) {
             ex.printStackTrace();
-            OnSocketMessageListener listener = listenersMap.get("disconnect");
-            listener.onSocketMessage("disconnected");
+            if((client == null || !client.isConnected()) && !ex.getClass().getName().equals("java.util.concurrent.TimeoutException")) {
+                OnSocketMessageListener listener = listenersMap.get("disconnect");
+                listener.onSocketMessage("disconnected");
+            }
 
             connectCountDown();
             return;
@@ -162,17 +169,28 @@ public class YYDroidApplication extends Application implements
 
     private void connectCountDown() {
 
-        new CountDownTimer(5000,1000){
+        if(timer == null) {
+            timer = new CountDownTimer(15000,1000){
 
-            @Override
-            public void onTick(long milliseconds){
+                @Override
+                public void onTick(long milliseconds){
+                    if(socketIOClient != null && socketIOClient.isConnected()) {
+                        OnSocketMessageListener listener = listenersMap.get("connect");
+                        listener.onSocketMessage("connected1231241251");
+                        timer.cancel();
+                    }
+                }
 
-            }
+                @Override
+                public void onFinish(){
+                    if(socketIOClient == null || !socketIOClient.isConnected()) {
+                        connectSocket();
+                        start();
+                    }
 
-            @Override
-            public void onFinish(){
-                connectSocket();
-            }
-        }.start();
+                }
+            }.start();
+        }
+
     }
 }

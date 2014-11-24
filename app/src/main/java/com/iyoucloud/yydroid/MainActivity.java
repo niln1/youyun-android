@@ -52,6 +52,7 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
     private NavDrawerListAdapter adapter;
 
     private List<NavDrawerItem> dataList;
+    private static final String TAG = "MainActivity";
 
 
     // slide menu items
@@ -149,7 +150,7 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
                     adapter.updateProfile(jsonObject);
                     Toast.makeText(getApplicationContext(),
                             "good good",
-                            Toast.LENGTH_LONG).show();
+                            Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Log.e(this.getClass().getName(), e.getMessage());
                 }
@@ -160,7 +161,8 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
             public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
                 Toast.makeText(getApplicationContext(),
                         throwable.getMessage(),
-                        Toast.LENGTH_LONG).show();
+                        Toast.LENGTH_SHORT).show();
+                forceLogout();
             }
         });
     }
@@ -229,7 +231,7 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
                 // called when response HTTP status is "200 OK"
                 Toast.makeText(getApplicationContext(),
                         "logged out",
-                        Toast.LENGTH_LONG).show();
+                        Toast.LENGTH_SHORT).show();
 
                 app.clearCookie();
                 Intent intent = new Intent(self, LoginActivity.class);
@@ -240,10 +242,13 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
             public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
                 Toast.makeText(getApplicationContext(),
                         throwable.getMessage(),
-                        Toast.LENGTH_LONG).show();
+                        Toast.LENGTH_SHORT).show();
+
+                Log.i(TAG, throwable.getMessage());
                 app.clearCookie();
                 Intent intent = new Intent(self, LoginActivity.class);
-                startActivity(intent);            }
+                startActivity(intent);
+            }
         });
     }
 
@@ -301,7 +306,7 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
 
     @Override
     public void onSocketMessage(String event, Object... jsonObject) {
-        if(event.equals("connected") || event.contains("disconnected") || event.equals("connecting")) {
+        if(event.contains("connected") || event.contains("disconnected") || event.equals("connecting")) {
             final String status = event;
             runOnUiThread(new Runnable() {
                 @Override

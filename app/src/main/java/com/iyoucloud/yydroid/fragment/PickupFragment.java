@@ -37,6 +37,8 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
     ArrayList<Card> pickedUpCards;
     ArrayList<Card> toPickCards;
     private String name;
+    private static final String TAG = "PickupFragment";
+
 
     SegmentedGroup segmentedGroup;
 

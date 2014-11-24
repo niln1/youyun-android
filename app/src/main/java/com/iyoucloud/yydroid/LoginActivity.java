@@ -20,6 +20,9 @@ import io.socket.SocketIO;
 
 public class LoginActivity extends BaseActivity {
 
+    private static final String TAG = "LoginActivity";
+
+
     /**
      * Called when the activity is first created.
      */
@@ -62,7 +65,7 @@ public class LoginActivity extends BaseActivity {
             public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
                 Toast.makeText(getApplicationContext(),
                         throwable.getMessage(),
-                        Toast.LENGTH_LONG).show();
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }

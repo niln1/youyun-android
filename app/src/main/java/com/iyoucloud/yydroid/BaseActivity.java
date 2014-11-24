@@ -65,9 +65,13 @@ public class BaseActivity extends Activity {
     private void authCheck() {
         if(!app.isAuthed() && !this.getClass().getName().equals(LoginActivity.class.getName()) ) {
             Log.d(this.getLocalClassName(), "not logged in");
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent);
+            forceLogout();
         }
+    }
+
+    protected void forceLogout() {
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
     }
 
     public JSONObject parseJsonResponse(byte[] response) throws JSONException{
