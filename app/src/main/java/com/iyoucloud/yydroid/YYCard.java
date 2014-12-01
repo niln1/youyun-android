@@ -11,6 +11,7 @@ import android.widget.ToggleButton;
 
 import com.iyoucloud.yydroid.fragment.PickupFragment;
 import com.iyoucloud.yydroid.util.OnToggleSwitchListener;
+import com.koushikdutta.async.http.SocketIOClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,7 +28,6 @@ import it.gmariotti.cardslib.library.internal.CardThumbnail;
 public class YYCard extends Card {
 
     protected String mTitleHeader;
-    protected String mTitleMain;
     protected OnToggleSwitchListener mListener;
     private String id;
     private String reportId;
@@ -35,32 +35,15 @@ public class YYCard extends Card {
     private String pickupTime;
     private String pickupLocation;
     private PickupFragment parentFragment;
-//
-//    public YYCard(Context context, String titleHeader, String titleMain) {
-//        super(context, R.layout.card_thumbnail_layout);
-//        this.mTitleHeader = titleHeader;
-//        this.mTitleMain = titleMain;
-//        init(context);
-//    }
-//
-//    public YYCard(Context context, String title, int innerLayout, String id, String reportId, boolean pickedUp) {
-//        super(context, innerLayout);
-//        try {
-//            mListener = (OnToggleCheckboxListener) context;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(context.toString() + " must implement OnToggleCheckboxListener");
-//        }
-//        this.mTitleHeader = title;
-//        this.id = id;
-//        this.reportId = reportId;
-//        this.pickedUp = pickedUp;
-//        init(context);
-//    }
+    private String studentName;
+    private String userImage;
+    private YYDroidApplication app;
 
-
-    public YYCard(Context context, PickupFragment parent, int innerLayout, String reportId, boolean pickedUp, JSONObject jsonObject) {
+    public YYCard(Context context, PickupFragment parent, int innerLayout, String reportId, boolean pickedUp, JSONObject jsonObject, YYDroidApplication app) {
         super(context, innerLayout);
         parentFragment = parent;
+        this.app = app;
+
         try {
             mListener = (OnToggleSwitchListener) context;
         } catch (ClassCastException e) {
@@ -105,9 +88,11 @@ public class YYCard extends Card {
             String userImage = studentJSON.getString("userImage");
 
             this.mTitleHeader = firstName + " " + lastName;
+            this.studentName = firstName + " " + lastName;
             this.id = id;
             this.pickedUp = pickedUp;
             this.pickupLocation = pickupLocation;
+            this.userImage = userImage;
 
         } catch (JSONException e) {
             e.getMessage();
@@ -116,6 +101,33 @@ public class YYCard extends Card {
         init(context);
     }
 
+    public String getPickupTime() {
+        return this.pickupTime;
+    }
+
+    public String getStudentName() {
+        return this.studentName;
+    }
+
+    public String getPickupLocation() {
+        return this.pickupLocation;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public boolean getPickedup() {
+        return this.pickedUp;
+    }
+
+    public String getReportId() {
+        return this.reportId;
+    }
+
+    public String getUserImage() {
+        return app.SERVER_URL + this.userImage;
+    }
 
     @Override
     public void setupInnerViewElements(final ViewGroup parent, View view) {
@@ -151,10 +163,10 @@ public class YYCard extends Card {
     }
 
     private void init(Context context) {
-
-        CardThumbnail cardThumbnail = new CardThumbnail(mContext);
-        cardThumbnail.setDrawableResource(R.drawable.default_user);
-        addCardThumbnail(cardThumbnail);
+//
+//        CardThumbnail cardThumbnail = new CardThumbnail(mContext, R.id.yy_thumb_card_image);
+//        cardThumbnail.setDrawableResource(R.drawable.default_user);
+//        addCardThumbnail(cardThumbnail);
 
 
 

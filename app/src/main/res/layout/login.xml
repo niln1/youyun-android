@@ -23,6 +23,7 @@
                 android:layout_gravity="center_horizontal|bottom"
                 android:layout_marginTop="114dp"
                 android:height="@dimen/large_button_height" android:width="@dimen/large_button_width"
+                android:inputType="textNoSuggestions"
                 android:layout_alignParentTop="true" android:layout_centerHorizontal="true"
                 android:textColor="@android:color/darker_gray" android:singleLine="true" android:hint="username"/>
         <EditText

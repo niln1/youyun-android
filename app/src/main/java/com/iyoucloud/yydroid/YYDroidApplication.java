@@ -29,7 +29,7 @@ public class YYDroidApplication extends Application implements
         CompletedCallback {
 
     //replace with your server url and port number
-    public static final String SERVER_URL = "http://172.20.10.2:3000";//"http://192.168.1.77:3000";
+    public static final String SERVER_URL = "http://192.168.1.77:3000";
     public static UrlHelper URL_HELPER;
     private AsyncHttpClient client;
     private PersistentCookieStore cookieStore;

@@ -31,6 +31,7 @@ import com.iyoucloud.yydroid.util.OnToggleSwitchListener;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.apache.http.Header;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -197,6 +198,16 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
       //  menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void updateMenu(JSONObject jsonObject) {
+        try {
+            JSONObject resultObject = jsonObject.getJSONObject("result");
+            Integer userType = resultObject.getInt("userType");
+
+        } catch (JSONException e) {
+
+        }
     }
 
 

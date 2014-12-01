@@ -9,12 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.iyoucloud.yydroid.R;
 import com.iyoucloud.yydroid.YYCard;
 import com.iyoucloud.yydroid.YYDroidApplication;
+import com.iyoucloud.yydroid.adapter.YYCardArrayAdapter;
+import com.iyoucloud.yydroid.view.YYListView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,12 +30,12 @@ import it.gmariotti.cardslib.library.view.CardListView;
 public class PickupFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener {
 
     YYDroidApplication app;
-    CardArrayAdapter mCardArrayAdapter;
-    CardListView listView;
+    YYCardArrayAdapter mCardArrayAdapter;
+    YYListView listView;
     Activity activity;
     SwipeRefreshLayout swipeLayout;
-    ArrayList<Card> pickedUpCards;
-    ArrayList<Card> toPickCards;
+    ArrayList<YYCard> pickedUpCards;
+    ArrayList<YYCard> toPickCards;
     private String name;
     private static final String TAG = "PickupFragment";
 
@@ -51,8 +51,8 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
                              Bundle savedInstanceState) {
 
         app = (YYDroidApplication)(getActivity().getApplication());
-        pickedUpCards = new ArrayList<Card>();
-        toPickCards = new ArrayList<Card>();
+        pickedUpCards = new ArrayList<YYCard>();
+        toPickCards = new ArrayList<YYCard>();
         name = "fragment_pickup";
 
         return inflater.inflate(R.layout.fragment_pickup, container, false);
@@ -73,11 +73,11 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
         segmentedGroup.setTintColor(getResources().getColor(R.color.fg_color),
                 getResources().getColor(R.color.school_dark_color));
 
-        ArrayList<Card> cards = new ArrayList<Card>();
+        ArrayList<YYCard> cards = new ArrayList<YYCard>();
 
-        mCardArrayAdapter = new CardArrayAdapter(getActivity(), cards);
+        mCardArrayAdapter = new YYCardArrayAdapter(getActivity(), R.id.yy_card_list, cards, this);
 
-        listView = (CardListView) getActivity().findViewById(R.id.yy_card_list);
+        listView = (YYListView) getActivity().findViewById(R.id.yy_card_list);
         if (listView != null) {
             listView.setAdapter(mCardArrayAdapter);
 
@@ -101,13 +101,13 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
 
             for (int i = 0; i < needToPickupList.length(); i++) {
                 JSONObject studentToPick = (JSONObject)(needToPickupList.get(i));
-                YYCard card = new YYCard(getActivity(), this, R.layout.card_content, reportId, false, studentToPick);
+                YYCard card = new YYCard(getActivity(), this, R.layout.card_content, reportId, false, studentToPick, app);
                 toPickCards.add(card);
             }
 
             for (int i = 0; i < pickedUpList.length(); i++) {
                 JSONObject studentToPick = (JSONObject)(pickedUpList.get(i));
-                YYCard card = new YYCard(getActivity(), this, R.layout.card_content, reportId, true, studentToPick);
+                YYCard card = new YYCard(getActivity(), this, R.layout.card_content, reportId, true, studentToPick, app);
 
                 pickedUpCards.add(card);
             }
