@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.iyoucloud.yydroid.R;
 import com.iyoucloud.yydroid.YYCard;
@@ -18,7 +19,12 @@ import com.iyoucloud.yydroid.view.YYListView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import info.hoang8f.android.segmented.SegmentedGroup;
 import io.socket.SocketIOException;
@@ -82,11 +88,29 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
             listView.setAdapter(mCardArrayAdapter);
 
         }
-        this.onRefresh();
     }
 
-    @Override public void onRefresh() {
+    @Override
+    public void onRefresh() {
         app.sendSocketMessage("pickup::teacher::get-report-for-today", this);
+    }
+
+    private void updateReportDate(JSONObject jsonObject) {
+        try {
+            String stringDate = jsonObject.getString("date");
+
+            Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(stringDate);
+            String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
+            TextView textView =  (TextView) getActivity().findViewById(R.id.pickup_report_date);
+            textView.setText("reported on: " + formattedDate);
+            textView.setVisibility(View.VISIBLE);
+        } catch(ParseException pe) {
+
+
+        } catch (JSONException e) {
+
+        }
+
     }
 
     private void initCards(JSONObject jsonObject) {
@@ -153,6 +177,13 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
 //
 //            return;
 //        }
+        if(event.equals("connecting") || event.equals("disconnected")) {
+            return;
+        }
+
+        if(event.equals("connected")) {
+            this.onRefresh();
+        }
 
         if(event.equals("pickup::teacher::pickup-student::success")) {
 
@@ -185,6 +216,7 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                updateReportDate(object);
                                 initCards(object);
                             }
                         });

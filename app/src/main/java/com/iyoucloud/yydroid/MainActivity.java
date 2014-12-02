@@ -129,7 +129,7 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
             displayView(0, null);
         }
 
-        HomeFragment fragment = new HomeFragment();
+        PickupFragment fragment = new PickupFragment();
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
         currentFragment = fragment;

@@ -63,7 +63,7 @@ public class YYCard extends Card {
 
                 try {
                     Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(pickedUpTime);
-                    String formattedDate = new SimpleDateFormat("hh:mm").format(date);
+                    String formattedDate = new SimpleDateFormat("hh:mm a").format(date);
                     this.pickupTime = formattedDate;
                 } catch (ParseException e) {
                     e.printStackTrace();

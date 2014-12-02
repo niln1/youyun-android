@@ -3,7 +3,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:gravity="center">
     <info.hoang8f.android.segmented.SegmentedGroup
         android:id="@+id/segmentgroup_pickup"
         android:layout_width="match_parent"
@@ -43,9 +44,18 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:weightSum="1">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="report date"
+                android:id="@+id/pickup_report_date"
+                android:gravity="center"
+                android:layout_gravity="center_horizontal"
+                android:visibility="invisible" />
 
             <com.iyoucloud.yydroid.view.YYListView xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/yy_card_list"
+                android:layout_below="@+id/pickup_report_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <!--<it.gmariotti.cardslib.library.view.CardListView-->
