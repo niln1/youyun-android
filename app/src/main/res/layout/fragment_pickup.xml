@@ -48,6 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="report date"
+                android:textColor="@color/school_dark_color"
                 android:id="@+id/pickup_report_date"
                 android:gravity="center"
                 android:layout_gravity="center_horizontal"
@@ -58,12 +59,7 @@
                 android:layout_below="@+id/pickup_report_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-            <!--<it.gmariotti.cardslib.library.view.CardListView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:id="@+id/yy_card_list"-->
-                <!--card:list_card_layout_resourceID="@layout/list_card_thumbnail_layout"/>-->
         </LinearLayout>
 
     </android.support.v4.widget.SwipeRefreshLayout>
-    </LinearLayout>
+</LinearLayout>
