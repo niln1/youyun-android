@@ -59,7 +59,7 @@ public class YYCardArrayAdapter extends ArrayAdapter<YYCard> {
         TextView pickupTimeTextView = (TextView) rowView.findViewById(R.id.yy_thumb_card_pickup_time);
         pickupTimeTextView.setText(card.getPickupTime());
         RoundedImageView imageView = (RoundedImageView) rowView.findViewById(R.id.yy_thumb_card_profile_image);
-        imageView.setImageResource(R.drawable.icon);
+        imageView.setImageResource(R.drawable.default_user);
         new ImageLoadTask(card.getUserImage(), imageView).execute(null, null);
 
 

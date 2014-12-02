@@ -55,6 +55,8 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
     private List<NavDrawerItem> dataList;
     private static final String TAG = "MainActivity";
 
+    private PickupFragment pickupFragment;
+    private HomeFragment homeFragment;
 
     // slide menu items
     private String[] navMenuTitles;
@@ -64,6 +66,9 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        pickupFragment = new PickupFragment();
+        homeFragment = new HomeFragment();
 
         dataList = new ArrayList<NavDrawerItem>();
         mTitle = mDrawerTitle = getTitle();
@@ -79,12 +84,11 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
 
         // adding nav drawer items to
         dataList.add(new NavDrawerItem(true)); // adding a userProfile to the list
-        // Home
-        dataList.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
-        // Pickup report
-        dataList.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
-        // Logout
-        dataList.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
+
+        for(int i = 0; i< navMenuTitles.length; i++) {
+            dataList.add(new NavDrawerItem(navMenuTitles[i], navMenuIcons.getResourceId(i, -1)));
+
+        }
 
 
         // Recycle the typed array
@@ -276,16 +280,19 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
                 break;
             //home
             case 1:
-                fragment = new HomeFragment();
+                fragment = pickupFragment;
+            //    fragment = new HomeFragment();
                 break;
             //pickup
             case 2:
-                fragment = new PickupFragment();
+                logout(view);
+            //    fragment = new PickupFragment();
                 break;
             //logout
             case 3:
-                logout(view);
-                return;
+                break;
+            //    logout(view);
+            //    return;
             default:
                 break;
         }

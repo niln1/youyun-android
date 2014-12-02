@@ -77,7 +77,17 @@ public class YYCard extends Card {
                 String weekDay;
                 Calendar calendar = Calendar.getInstance();
                 weekDay = dayFormat.format(calendar.getTime()).toLowerCase();
-                this.pickupTime = pickupDetail.getString(weekDay + "PickupTime");
+                try {
+                    pickedUpTime = pickupDetail.getString(weekDay + "PickupTime");
+                    Date date = new SimpleDateFormat("HH:mm").parse(pickedUpTime);
+
+                    String formattedDate = new SimpleDateFormat("hh:mm a").format(date);
+                    this.pickupTime = formattedDate;
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    this.pickupTime = pickedUpTime;
+                }
+
 
             }
             String firstName = studentJSON.getString("firstname");
