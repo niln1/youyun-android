@@ -42,6 +42,7 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
     SwipeRefreshLayout swipeLayout;
     ArrayList<YYCard> pickedUpCards;
     ArrayList<YYCard> toPickCards;
+    TextView noResultsFound;
     private String name;
     private static final String TAG = "PickupFragment";
 
@@ -84,6 +85,7 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
         mCardArrayAdapter = new YYCardArrayAdapter(getActivity(), R.id.yy_card_list, cards, this);
 
         listView = (YYListView) getActivity().findViewById(R.id.yy_card_list);
+        noResultsFound = (TextView) getActivity().findViewById(R.id.yy_no_results);
         if (listView != null) {
             listView.setAdapter(mCardArrayAdapter);
 
@@ -96,6 +98,8 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
     }
 
     private void updateReportDate(JSONObject jsonObject) {
+        if (jsonObject == null) return;
+
         try {
             String stringDate = jsonObject.getString("date");
 
@@ -115,6 +119,20 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
 
     private void initCards(JSONObject jsonObject) {
 
+        if(jsonObject == null) {
+            noResultsFound.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.INVISIBLE);
+            return;
+        }
+
+        if(jsonObject.length() == 0) {
+            noResultsFound.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.INVISIBLE);
+            return;
+        }
+
+        noResultsFound.setVisibility(View.INVISIBLE);
+        listView.setVisibility(View.VISIBLE);
 
         try {
             JSONArray needToPickupList = jsonObject.getJSONArray("needToPickupList");
@@ -204,24 +222,24 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
 
             swipeLayout.setRefreshing(false);
 
+            if(jsonObject.length == 0) {
+                return;
+            }
+
             try {
-                if(jsonObject.length == 0) {
-                    return;
-                }
 
                 JSONArray jsonArray = ((JSONArray) jsonObject[0]);
-                if(jsonArray.length() > 0) {
-                    final JSONObject object = ((JSONObject) (jsonArray.get(0)));
-                    if(object.length() > 0) {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                updateReportDate(object);
-                                initCards(object);
-                            }
-                        });
+                final JSONObject object = jsonArray.length() > 0
+                        ? ((JSONObject) (jsonArray.get(0)))
+                        : null;
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateReportDate(object);
+                        initCards(object);
                     }
-                }
+                });
 
             } catch (JSONException e) {
                 e.printStackTrace();
