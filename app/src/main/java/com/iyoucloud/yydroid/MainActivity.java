@@ -337,14 +337,6 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
         }
         //forward the event to current fragment
         currentFragment.onSocketMessage(event, jsonObject);
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Toast.makeText(getApplicationContext(),
-//                        "picked",
-//                        Toast.LENGTH_LONG).show();
-//            }
-//        });
     }
 
     /**
@@ -358,12 +350,5 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
             displayView(position, view);
         }
     }
-//
-//    public BaseFragment getActiveFragment() {
-//        if (getFragmentManager().getBackStackEntryCount() == 0) {
-//            return null;
-//        }
-//        String tag = getFragmentManager().getBackStackEntryAt(getFragmentManager().getBackStackEntryCount() - 1).getName();
-//        return (BaseFragment) getFragmentManager().findFragmentByTag(tag);
-//    }
+
 }

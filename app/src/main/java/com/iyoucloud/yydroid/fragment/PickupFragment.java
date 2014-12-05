@@ -19,19 +19,12 @@ import com.iyoucloud.yydroid.view.YYListView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
 import info.hoang8f.android.segmented.SegmentedGroup;
 import io.socket.SocketIOException;
-import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
-import it.gmariotti.cardslib.library.view.CardListView;
-
 
 public class PickupFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener {
 
@@ -43,7 +36,6 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
     ArrayList<YYCard> pickedUpCards;
     ArrayList<YYCard> toPickCards;
     TextView noResultsFound;
-    private String name;
     private static final String TAG = "PickupFragment";
 
 
@@ -183,18 +175,7 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
     public void onSocketMessage(String event, final Object... jsonObject) {
 
         final PickupFragment self = this;
-//        if(event.equals("connected") || event.equals("disconnected") || event.equals("connecting")) {
-//            final String status = event;
-//            activity.runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    TextView textView = (TextView) getActivity().findViewById(R.id.connection_status);
-//                    textView.setText(status);
-//                }
-//            });
-//
-//            return;
-//        }
+
         if(event.equals("connecting") || event.equals("disconnected")) {
             return;
         }
