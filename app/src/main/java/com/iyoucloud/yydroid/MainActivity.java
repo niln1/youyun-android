@@ -135,7 +135,7 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
 
         PickupFragment fragment = new PickupFragment();
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.frame_container, fragment, "pickUp").commit();
         currentFragment = fragment;
         app.connectSocket(this);
     }
@@ -153,23 +153,38 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
                     JSONObject jsonObject = parseJsonResponse(response);
 
                     adapter.updateProfile(jsonObject);
-                    Toast.makeText(getApplicationContext(),
-                            "good good",
-                            Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(),
+//                            "good good",
+//                            Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
-                    Log.e(this.getClass().getName(), e.getMessage());
+                    try {
+                        Log.e(TAG, e.getCause().getMessage());
+
+                    } catch (Exception te) {
+                        Log.e(TAG, "stupid null exception");
+                    }
                 }
 
             }
 
             @Override
             public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-                Toast.makeText(getApplicationContext(),
-                        throwable.getMessage(),
-                        Toast.LENGTH_SHORT).show();
+                Log.d(this.getClass().getName(), throwable.getMessage());
+//                Toast.makeText(getApplicationContext(),
+//                        throwable.getMessage(),
+//                        Toast.LENGTH_SHORT).show();
                 forceLogout();
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(!app.isSocketAlive()) {
+            app.connectSocket(this);
+        }
     }
 
     @Override
@@ -238,6 +253,7 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
 
     public void logout(View view) {
         final MainActivity self = this;
+        app.disconnectSocket();
 
         client.get(getApplicationContext(), app.URL_HELPER.getLogoutUrl(), new AsyncHttpResponseHandler() {
 
@@ -274,13 +290,18 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
     private void displayView(int position, View view) {
         // update the main content by replacing fragments
         BaseFragment fragment = null;
+        String tag = "";
         switch (position) {
             //user avator
             case 0:
                 break;
             //home
             case 1:
-                fragment = pickupFragment;
+                tag = "pickUp";
+                fragment = (BaseFragment) getFragmentManager().findFragmentByTag(tag);
+                if(fragment == null) {
+                    fragment = new PickupFragment();
+                }
             //    fragment = new HomeFragment();
                 break;
             //pickup
@@ -298,15 +319,17 @@ public class MainActivity extends BaseActivity implements OnToggleSwitchListener
         }
 
         if (fragment != null) {
+            getFragmentManager().beginTransaction().replace(R.id.frame_container, fragment, tag).commit();
 
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
+//            FragmentManager fragmentManager = getFragmentManager();
+//            fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit();
             currentFragment = fragment;
 
             // update selected item and title, then close the drawer
             mDrawerList.setItemChecked(position, true);
             mDrawerList.setSelection(position);
-            setTitle(navMenuTitles[position-1]);
+            setTitle(navMenuTitles[position - 1]);
+            fragment.onDisplayed();
             mDrawerLayout.closeDrawer(mDrawerList);
         } else {
             //selected on user profile

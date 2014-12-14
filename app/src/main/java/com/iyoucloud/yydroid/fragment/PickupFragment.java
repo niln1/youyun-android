@@ -83,10 +83,22 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
 
         }
     }
+//
+//    @Override
+//    public void onResume() {
+//        app.sendSocketMessage("pickup::teacher::get-report-for-today", this);
+//    }
 
     @Override
     public void onRefresh() {
         app.sendSocketMessage("pickup::teacher::get-report-for-today", this);
+    }
+
+    @Override
+    public void onDisplayed() {
+//        if(app != null) {
+            app.sendSocketMessage("pickup::teacher::get-report-for-today", this);
+//        }
     }
 
     private void updateReportDate(JSONObject jsonObject) {
@@ -192,7 +204,7 @@ public class PickupFragment extends BaseFragment implements RadioGroup.OnChecked
 
                     Toast.makeText(app.getApplicationContext(),
                             segmentedGroup.getCheckedRadioButtonId() == R.id.segment_to_pick_button ? "picked" : "undo picked",
-                            Toast.LENGTH_LONG).show();
+                            Toast.LENGTH_SHORT).show();
                     //update pick table here
 
                     self.onRefresh();

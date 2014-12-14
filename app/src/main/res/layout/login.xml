@@ -3,7 +3,7 @@
               android:orientation="vertical"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
-              android:weightSum="1" android:background="@drawable/background">
+              android:weightSum="1" android:background="@drawable/login_view_background">
     <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent" android:focusable="true" android:focusableInTouchMode="true">
@@ -13,11 +13,18 @@
                 android:text="Login"
                 android:onClick="login"
                 android:id="@+id/button" android:layout_gravity="center_horizontal"
-                android:layout_alignParentBottom="true" android:layout_centerHorizontal="true"
-                android:layout_marginBottom="100dp" android:hint="username"/>
+                android:layout_alignParentBottom="true"
+            android:layout_marginBottom="100dp" android:hint="username"
+            android:layout_alignLeft="@+id/passwordText"
+            android:layout_alignStart="@+id/passwordText"
+            android:layout_alignRight="@+id/passwordText"
+            android:layout_alignEnd="@+id/passwordText"
+            android:textColor="@android:color/white"
+            android:background="@color/school_dark_color" />
         <EditText
                 android:layout_width="@dimen/large_button_width"
                 android:layout_height="@dimen/large_button_height"
+                android:ems="10"
                 android:id="@+id/userNameText" android:background="@android:color/background_light"
                 android:editable="true" android:clickable="true" android:enabled="true" android:focusable="true"
                 android:layout_gravity="center_horizontal|bottom"
@@ -25,7 +32,9 @@
                 android:height="@dimen/large_button_height" android:width="@dimen/large_button_width"
                 android:inputType="textNoSuggestions"
                 android:layout_alignParentTop="true" android:layout_centerHorizontal="true"
-                android:textColor="@android:color/darker_gray" android:singleLine="true" android:hint="username"/>
+                android:textColor="@android:color/darker_gray" android:singleLine="true" android:hint="username"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp" />
         <EditText
                 android:layout_width="@dimen/large_button_width"
                 android:layout_height="@dimen/large_button_height"
@@ -37,7 +46,9 @@
                 android:layout_marginTop="67dp" android:password="true"
                 android:width="@dimen/large_button_width" android:height="40dp" android:layout_below="@+id/userNameText"
                 android:layout_alignLeft="@+id/userNameText" android:textColor="@android:color/darker_gray"
-                android:singleLine="true" android:hint="password"/>
+                android:singleLine="true" android:hint="password"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp" />
     </RelativeLayout>
 </LinearLayout>
 

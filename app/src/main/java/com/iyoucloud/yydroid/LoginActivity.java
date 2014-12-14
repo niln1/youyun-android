@@ -3,6 +3,7 @@ package com.iyoucloud.yydroid;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -64,8 +65,9 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
                 Toast.makeText(getApplicationContext(),
-                        throwable.getMessage(),
+                        "login failed",
                         Toast.LENGTH_SHORT).show();
+                Log.e(TAG, throwable.getMessage());
             }
         });
     }

@@ -3,6 +3,7 @@ package com.iyoucloud.yydroid;
 
 import android.app.Application;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.CountDownTimer;
 import android.util.Log;
 import com.iyoucloud.yydroid.helper.UrlHelper;
@@ -35,6 +36,7 @@ public class YYDroidApplication extends Application implements
     private PersistentCookieStore cookieStore;
     private Map<String, OnSocketMessageListener> listenersMap;
     private SocketIOClient socketIOClient;
+    String TAG = "YYApplication";
     private CountDownTimer timer;
 
     @Override
@@ -55,7 +57,7 @@ public class YYDroidApplication extends Application implements
     }
 
     public boolean isSocketAlive() {
-        return socketIOClient.isConnected();
+        return socketIOClient != null && socketIOClient.isConnected();
     }
 
     public boolean isAuthed() {
@@ -71,6 +73,10 @@ public class YYDroidApplication extends Application implements
         cookieStore.clear();
     }
 
+    public void disconnectSocket() {
+        socketIOClient.disconnect();
+    }
+
     public void connectSocket(OnSocketMessageListener listener) {
         listenersMap.put("connect", listener);
         listenersMap.put("disconnect", listener);
@@ -82,6 +88,9 @@ public class YYDroidApplication extends Application implements
 
     private void connectSocket() {
         if(socketIOClient != null && socketIOClient.isConnected()){
+            return;
+        }
+        if(cookieStore.getCookies().isEmpty()) {
             return;
         }
 
@@ -109,7 +118,14 @@ public class YYDroidApplication extends Application implements
         listenersMap.put(message + "::fail", listener);
         JSONArray tmp = new JSONArray();
         tmp.put("");
-        socketIOClient.emit(message, tmp);
+
+        try {
+            socketIOClient.emit(message, tmp);
+
+        } catch (NullPointerException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
     }
 
 
@@ -147,6 +163,10 @@ public class YYDroidApplication extends Application implements
     @Override
     public void onEvent(String event, JSONArray jsonArray) {
         OnSocketMessageListener listener = listenersMap.get(event);
+        if(null == listener) {
+            Log.d(TAG, "listener for " + event + " is unhandled");
+            return;
+        }
         listener.onSocketMessage(event, jsonArray);
     }
 
@@ -169,16 +189,15 @@ public class YYDroidApplication extends Application implements
 
     private void connectCountDown() {
 
-        if(timer == null) {
-            timer = new CountDownTimer(15000,1000){
+        new CountDownTimer(15000,1000){
 
                 @Override
                 public void onTick(long milliseconds){
-                    if(socketIOClient != null && socketIOClient.isConnected()) {
-                        OnSocketMessageListener listener = listenersMap.get("connect");
-                        listener.onSocketMessage("connected1231241251");
-                        timer.cancel();
-                    }
+//                    if(socketIOClient != null && socketIOClient.isConnected()) {
+//                        OnSocketMessageListener listener = listenersMap.get("connect");
+//                        listener.onSocketMessage("connected1231241251");
+//                //        timer.cancel();
+//                    }
                 }
 
                 @Override
@@ -192,5 +211,5 @@ public class YYDroidApplication extends Application implements
             }.start();
         }
 
-    }
+
 }
